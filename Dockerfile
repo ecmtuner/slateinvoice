@@ -1,17 +1,16 @@
 FROM node:20-alpine
 
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl libc6-compat
 
 WORKDIR /app
 
-COPY package.json ./
-COPY prisma ./prisma/
+COPY . .
 
 RUN npm install --legacy-peer-deps
 
-RUN npx prisma generate
+ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
 
-COPY . .
+RUN npx prisma generate
 
 RUN npm run build
 
