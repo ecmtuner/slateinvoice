@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  password       String
+  name           String?
+  plan           String    @default("free")
+  invoiceCount   Int       @default(0)
+  invoiceResetAt DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+  business       Business?
+  clients        Client[]
+  products       Product[]
+  invoices       Invoice[]
+}
+
+model Business {
+  id      String  @id @default(cuid())
+  userId  String  @unique
+  user    User    @relation(fields: [userId], references: [id])
+  name    String  @default("")
+  email   String  @default("")
+  phone   String  @default("")
+  address String  @default("")
+  logo    String  @default("")
+  currency String @default("USD")
+  terms   String  @default("")
+  notes   String  @default("")
+}
+
+model Client {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  name         String
+  company      String    @default("")
+  email        String    @default("")
+  phone        String    @default("")
+  address      String    @default("")
+  totalEarned  Float     @default(0)
+  createdAt    DateTime  @default(now())
+  invoices     Invoice[]
+}
+
+model Product {
+  id          String  @id @default(cuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id])
+  name        String
+  description String  @default("")
+  price       Float   @default(0)
+  unit        String  @default("item")
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  clientId       String?
+  client         Client?       @relation(fields: [clientId], references: [id])
+  type           String        @default("invoice")
+  number         String
+  status         String        @default("draft")
+  currency       String        @default("USD")
+  fromName       String        @default("")
+  fromEmail      String        @default("")
+  fromPhone      String        @default("")
+  fromAddress    String        @default("")
+  toName         String        @default("")
+  toEmail        String        @default("")
+  toPhone        String        @default("")
+  toAddress      String        @default("")
+  subtotal       Float         @default(0)
+  taxRate        Float         @default(0)
+  taxAmount      Float         @default(0)
+  discountRate   Float         @default(0)
+  discountAmount Float         @default(0)
+  fees           Float         @default(0)
+  total          Float         @default(0)
+  notes          String        @default("")
+  terms          String        @default("")
+  issueDate      String
+  dueDate        String        @default("")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  items          InvoiceItem[]
+}
+
+model InvoiceItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  qty         Float   @default(1)
+  unitPrice   Float   @default(0)
+  amount      Float   @default(0)
+  productId   String?
+}
