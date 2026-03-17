@@ -14,7 +14,7 @@ RUN DATABASE_URL="postgresql://x:x@localhost/x" ./node_modules/.bin/prisma gener
 
 COPY . .
 
-RUN npm run build 2>&1 || (echo "BUILD FAILED" && exit 1)
+RUN NEXTAUTH_SECRET="buildsecret" NEXTAUTH_URL="http://localhost:3000" npm run build
 
 EXPOSE 3000
 
