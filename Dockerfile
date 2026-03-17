@@ -18,4 +18,6 @@ RUN NEXTAUTH_SECRET="buildsecret" NEXTAUTH_URL="http://localhost:3000" node_modu
 
 EXPOSE 3000
 
-CMD node_modules/.bin/next start -p ${PORT:-3000}
+COPY start.sh ./
+RUN chmod +x start.sh
+CMD ["./start.sh"]
