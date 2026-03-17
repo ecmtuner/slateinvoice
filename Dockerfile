@@ -15,10 +15,10 @@ RUN DATABASE_URL="postgresql://x:x@localhost/x" ./node_modules/.bin/prisma gener
 ARG CACHEBUST=1
 COPY . .
 
-RUN NEXTAUTH_SECRET="buildsecret" NEXTAUTH_URL="http://localhost:3000" npm run build
+RUN NEXTAUTH_SECRET="buildsecret" NEXTAUTH_URL="http://localhost:3000" node_modules/.bin/next build
 
 EXPOSE 3000
 
 ENV PORT=3000
 
-CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && npm run start"]
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && node_modules/.bin/next start"]
