@@ -1,4 +1,3 @@
-// eslint-disable @typescript-eslint/no-explicit-any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
@@ -23,22 +22,36 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = (session.user as any).id;
-  const plan = (session.user as any).plan ?? "free";
 
-  // Free tier limit: 3 invoices/month
-  if (plan === "free") {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
-    // Reset monthly count if needed
-    const resetDate = new Date(user.invoiceResetAt);
+  // Fetch user from DB to get latest plan
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  const plan = user.plan ?? "free";
+
+  // Plan gating: count invoices this calendar month
+  if (plan === "free" || plan === "starter") {
     const now = new Date();
-    const monthAgo = new Date(now.getFullYear(), now.getMonth(), 1);
-    let count = user.invoiceCount;
-    if (resetDate < monthAgo) {
-      count = 0;
-      await prisma.user.update({ where: { id: userId }, data: { invoiceCount: 0, invoiceResetAt: now } });
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthCount = await prisma.invoice.count({
+      where: {
+        userId,
+        createdAt: { gte: monthStart },
+      },
+    });
+
+    if (plan === "free" && monthCount >= 5) {
+      return NextResponse.json(
+        { error: "Free plan limit reached. Upgrade to create more invoices.", upgrade: true },
+        { status: 409 }
+      );
     }
-    if (count >= 3) return NextResponse.json({ error: "Free tier limit reached. Upgrade to Pro for unlimited invoices." }, { status: 403 });
+    if (plan === "starter" && monthCount >= 50) {
+      return NextResponse.json(
+        { error: "Starter plan limit reached (50/month). Upgrade to create more invoices.", upgrade: true },
+        { status: 409 }
+      );
+    }
   }
 
   const body = await req.json();
@@ -58,9 +71,6 @@ export async function POST(req: NextRequest) {
     },
     include: { items: true, client: true },
   });
-
-  // Increment monthly count
-  await prisma.user.update({ where: { id: userId }, data: { invoiceCount: { increment: 1 } } });
 
   // Update client total if paid
   if (invoice.clientId && invoice.status === "paid") {

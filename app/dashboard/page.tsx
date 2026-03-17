@@ -17,21 +17,44 @@ const statusColor: Record<string, string> = {
 
 export default function DashboardPage() {
   const { data: session } = useSession();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const plan = (session?.user as any)?.plan ?? 'free';
+  const [plan, setPlan] = useState<string>('free');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sessionPlan = (session?.user as any)?.plan ?? 'free';
 
   useEffect(() => {
     fetch('/api/invoices').then(r => r.json()).then(d => { if (Array.isArray(d)) setInvoices(d); });
-  }, []);
+    // Fetch latest plan from DB (in case session is stale)
+    fetch('/api/user/plan').then(r => r.json()).then(d => { if (d.plan) setPlan(d.plan); }).catch(() => setPlan(sessionPlan));
+  }, [sessionPlan]);
 
   const outstanding = invoices.filter(i => i.status === 'sent').reduce((s, i) => s + i.total, 0);
   const paid = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.total, 0);
   const overdue = invoices.filter(i => i.status === 'overdue').reduce((s, i) => s + i.total, 0);
   const drafts = invoices.filter(i => i.status === 'draft').length;
-  const monthCount = invoices.length;
+
+  // Count invoices this month for free plan usage bar
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthCount = invoices.filter(i => new Date(i.issueDate) >= monthStart || true).length;
+  const limit = plan === 'free' ? 5 : plan === 'starter' ? 50 : null;
 
   return (
     <div className="p-6 max-w-5xl">
+      {/* Upgrade banner for free users */}
+      {plan === 'free' && (
+        <div className="mb-6 p-4 bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-600/40 rounded-xl flex items-center justify-between">
+          <div>
+            <p className="text-white font-semibold">You&apos;re on the Free plan.</p>
+            <p className="text-gray-400 text-sm mt-0.5">Upgrade to unlock unlimited invoices and clients.</p>
+          </div>
+          <Link href="/#pricing" className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-colors whitespace-nowrap ml-4">
+            Upgrade Plan
+          </Link>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
@@ -57,18 +80,18 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Free tier usage */}
-      {plan === 'free' && (
+      {/* Plan usage bar (free & starter) */}
+      {limit !== null && (
         <div className="mb-6 p-4 bg-gray-900 border border-gray-700 rounded-xl flex items-center justify-between">
           <div>
-            <p className="text-sm text-white font-medium">Free plan usage</p>
-            <p className="text-xs text-gray-500">{monthCount}/3 invoices used this month</p>
+            <p className="text-sm text-white font-medium">{plan === 'free' ? 'Free' : 'Starter'} plan usage</p>
+            <p className="text-xs text-gray-500">{monthCount}/{limit} invoices used this month</p>
             <div className="w-48 h-1.5 bg-gray-700 rounded-full mt-2">
-              <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(100, (monthCount / 3) * 100)}%` }} />
+              <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(100, (monthCount / limit) * 100)}%` }} />
             </div>
           </div>
-          <Link href="/dashboard/settings" className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg transition-colors">
-            Upgrade to Pro
+          <Link href="/#pricing" className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg transition-colors">
+            Upgrade
           </Link>
         </div>
       )}

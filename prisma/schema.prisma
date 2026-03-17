@@ -8,18 +8,22 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(cuid())
-  email          String    @unique
-  password       String
-  name           String?
-  plan           String    @default("free")
-  invoiceCount   Int       @default(0)
-  invoiceResetAt DateTime  @default(now())
-  createdAt      DateTime  @default(now())
-  business       Business?
-  clients        Client[]
-  products       Product[]
-  invoices       Invoice[]
+  id                     String    @id @default(cuid())
+  email                  String    @unique
+  password               String
+  name                   String?
+  plan                   String?   @default("free")
+  stripeCustomerId       String?
+  stripeSubscriptionId   String?
+  stripePriceId          String?
+  stripeCurrentPeriodEnd DateTime?
+  invoiceCount           Int       @default(0)
+  invoiceResetAt         DateTime  @default(now())
+  createdAt              DateTime  @default(now())
+  business               Business?
+  clients                Client[]
+  products               Product[]
+  invoices               Invoice[]
 }
 
 model Business {

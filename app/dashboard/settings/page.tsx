@@ -8,13 +8,22 @@ export default function SettingsPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', currency: 'USD', terms: '', notes: '' });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const plan = (session?.user as any)?.plan ?? 'free';
+  const [plan, setPlan] = useState<string>('free');
+  const [periodEnd, setPeriodEnd] = useState<string | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sessionPlan = (session?.user as any)?.plan ?? 'free';
 
   useEffect(() => {
     fetch('/api/business').then(r => r.json()).then(d => {
       if (d?.userId) setForm({ name: d.name||'', email: d.email||'', phone: d.phone||'', address: d.address||'', currency: d.currency||'USD', terms: d.terms||'', notes: d.notes||'' });
     });
-  }, []);
+    // Fetch latest plan from DB
+    fetch('/api/user/plan').then(r => r.json()).then(d => {
+      if (d.plan) setPlan(d.plan);
+      if (d.stripeCurrentPeriodEnd) setPeriodEnd(d.stripeCurrentPeriodEnd);
+    }).catch(() => setPlan(sessionPlan));
+  }, [sessionPlan]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true); setSaved(false);
@@ -23,23 +32,79 @@ export default function SettingsPage() {
     setTimeout(() => setSaved(false), 2000);
   };
 
+  const handleManageBilling = async () => {
+    setPortalLoading(true);
+    try {
+      const res = await fetch('/api/subscription/portal', { method: 'POST' });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error || 'Failed to open billing portal');
+      }
+    } catch {
+      alert('Failed to open billing portal');
+    } finally {
+      setPortalLoading(false);
+    }
+  };
+
+  const planLabel = plan === 'free' ? 'Free'
+    : plan === 'starter' ? 'Starter ($7/mo)'
+    : plan === 'freelancer' ? 'Freelancer ($15/mo)'
+    : plan === 'business' ? 'Business ($25/mo)'
+    : 'Free';
+
+  const isPaid = plan !== 'free';
+
+  const formatDate = (dateStr: string) => {
+    try { return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); }
+    catch { return dateStr; }
+  };
+
   return (
     <div className="p-6 max-w-2xl">
       <h1 className="text-2xl font-bold text-white mb-2">Settings</h1>
       <p className="text-gray-500 text-sm mb-8">Your business profile is used to autofill invoices.</p>
 
-      {/* Plan status */}
-      <div className={`mb-6 p-4 rounded-xl border flex items-center justify-between ${plan === 'pro' ? 'bg-blue-600/10 border-blue-600/30' : 'bg-gray-900 border-gray-700'}`}>
-        <div>
-          <p className="font-semibold text-white">{plan === 'pro' ? '⚡ Pro Plan' : 'Free Plan'}</p>
-          <p className="text-sm text-gray-400">{plan === 'pro' ? 'Unlimited invoices · All features' : '3 invoices/month · 3 clients max'}</p>
+      {/* Billing section */}
+      <div className={`mb-8 p-5 rounded-xl border ${isPaid ? 'bg-blue-600/10 border-blue-600/30' : 'bg-gray-900 border-gray-700'}`}>
+        <h2 className="font-semibold text-white mb-3">Billing</h2>
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <p className="text-white font-medium">{isPaid ? `⚡ ${planLabel}` : `Free Plan`}</p>
+            {isPaid ? (
+              <p className="text-sm text-gray-400 mt-0.5">
+                {periodEnd ? `Renews on ${formatDate(periodEnd)}` : 'Active subscription'}
+              </p>
+            ) : (
+              <p className="text-sm text-gray-400 mt-0.5">5 invoices/month · 3 clients max</p>
+            )}
+          </div>
+          {isPaid && <span className="text-green-400 text-sm">✓ Active</span>}
         </div>
-        {plan === 'free' && (
-          <Link href="/#pricing" className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-colors">
-            See Plans
-          </Link>
-        )}
-        {plan === 'pro' && <span className="text-green-400 text-sm">✓ Active</span>}
+        <div className="flex flex-wrap gap-3">
+          {!isPaid && (
+            <Link href="/#pricing"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-colors">
+              Upgrade Plan
+            </Link>
+          )}
+          {isPaid && (
+            <button
+              onClick={handleManageBilling}
+              disabled={portalLoading}
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors">
+              {portalLoading ? 'Loading...' : 'Manage Subscription'}
+            </button>
+          )}
+          {!isPaid && (
+            <Link href="/#pricing"
+              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-300 rounded-xl text-sm font-medium transition-colors">
+              See All Plans
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Business profile */}
