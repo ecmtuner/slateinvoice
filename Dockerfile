@@ -14,7 +14,7 @@ RUN DATABASE_URL="postgresql://x:x@localhost/x" ./node_modules/.bin/prisma gener
 
 COPY . .
 
-RUN npm run build
+RUN npm run build 2>&1 || (echo "BUILD FAILED" && exit 1)
 
 EXPOSE 3000
 
