@@ -107,7 +107,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl">🧾</span>
-            <span className="text-xl font-bold text-white">InvoiceBuddy</span>
+            <span className="text-xl font-bold text-white">SlateInvoice</span>
           </div>
           <div className="flex items-center gap-3">
             <Link href="#pricing" className="text-sm text-gray-400 hover:text-white transition-colors">Pricing</Link>
@@ -146,7 +146,7 @@ export default function LandingPage() {
       <section className="max-w-3xl mx-auto px-4 pb-12">
         <div className="bg-blue-600/10 border border-blue-500/30 rounded-2xl p-6 text-center">
           <p className="text-blue-300 font-semibold text-lg mb-2">💸 Why pay more?</p>
-          <p className="text-gray-400 text-sm">Competitors charge $20–$30/month for the same features. InvoiceBuddy starts at <strong className="text-white">$7/mo</strong> for Starter and <strong className="text-white">$15/mo</strong> for unlimited — saving you up to $180/year.</p>
+          <p className="text-gray-400 text-sm">Competitors charge $20–$30/month for the same features. SlateInvoice starts at <strong className="text-white">$7/mo</strong> for Starter and <strong className="text-white">$15/mo</strong> for unlimited — saving you up to $180/year.</p>
         </div>
       </section>
 
@@ -221,7 +221,7 @@ export default function LandingPage() {
               <tr className="border-b border-gray-800">
                 <th className="text-left pb-3 text-gray-500 font-medium">Plan</th>
                 <th className="text-center pb-3 text-gray-500 font-medium">Invoices</th>
-                <th className="text-center pb-3 text-gray-500 font-medium">InvoiceBuddy</th>
+                <th className="text-center pb-3 text-gray-500 font-medium">SlateInvoice</th>
                 <th className="text-center pb-3 text-gray-500 font-medium">Competitor</th>
                 <th className="text-center pb-3 text-gray-400 font-medium">You Save</th>
               </tr>
@@ -248,14 +248,14 @@ export default function LandingPage() {
       {/* CTA */}
       <section className="max-w-3xl mx-auto px-4 py-20 text-center">
         <h2 className="text-3xl font-bold text-white mb-4">Ready to get paid faster?</h2>
-        <p className="text-gray-400 mb-8">Join freelancers and small businesses using InvoiceBuddy — professional invoicing at half the price.</p>
+        <p className="text-gray-400 mb-8">Join freelancers and small businesses using SlateInvoice — professional invoicing at half the price.</p>
         <Link href="/signup" className="inline-block px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-colors">
           Create Free Account →
         </Link>
       </section>
 
       <footer className="border-t border-gray-800 py-8 text-center text-sm text-gray-600">
-        <p>InvoiceBuddy · Simple invoicing for everyone · <Link href="/login" className="hover:text-gray-400">Sign in</Link></p>
+        <p>SlateInvoice · Simple invoicing for everyone · <Link href="/login" className="hover:text-gray-400">Sign in</Link></p>
       </footer>
     </main>
   );

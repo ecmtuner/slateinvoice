@@ -35,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="p-4 border-b border-gray-800">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-2xl">🧾</span>
-            <span className="font-bold text-white text-lg">InvoiceBuddy</span>
+            <span className="font-bold text-white text-lg">SlateInvoice</span>
           </Link>
           <div className="mt-2">
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${plan === 'pro' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-400'}`}>

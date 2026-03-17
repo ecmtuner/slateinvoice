@@ -6,7 +6,7 @@ import SessionProvider from '@/components/SessionProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'InvoiceBuddy — Simple Invoicing for Everyone',
+  title: 'SlateInvoice — Simple Invoicing for Everyone',
   description: 'Create professional invoices, estimates, and receipts in seconds. Free plan available.',
 };
 

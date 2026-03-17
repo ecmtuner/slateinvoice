@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       line_items: [{
         price_data: {
           currency: 'usd',
-          product_data: { name: 'Pay Stub — InvoiceBuddy', description: 'One professional pay stub PDF' },
+          product_data: { name: 'Pay Stub — SlateInvoice', description: 'One professional pay stub PDF' },
           unit_amount: 500, // $5.00
         },
         quantity: 1,
