@@ -12,15 +12,10 @@ COPY prisma ./prisma/
 
 RUN DATABASE_URL="postgresql://x:x@localhost/x" ./node_modules/.bin/prisma generate
 
-ARG CACHEBUST=1
 COPY . .
 
 RUN NEXTAUTH_SECRET="buildsecret" NEXTAUTH_URL="http://localhost:3000" node_modules/.bin/next build
 
 EXPOSE 3000
 
-ENV PORT=3000
-
-COPY start.sh ./
-RUN chmod +x start.sh
-CMD ["./start.sh"]
+CMD node_modules/.bin/next start -p ${PORT:-3000}
