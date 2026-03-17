@@ -12,6 +12,7 @@ COPY prisma ./prisma/
 
 RUN DATABASE_URL="postgresql://x:x@localhost/x" ./node_modules/.bin/prisma generate
 
+ARG CACHEBUST=1
 COPY . .
 
 RUN NEXTAUTH_SECRET="buildsecret" NEXTAUTH_URL="http://localhost:3000" npm run build
