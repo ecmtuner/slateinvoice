@@ -256,7 +256,16 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-gray-800 py-8 text-center text-sm text-gray-600">
-        <p>SlateInvoice · Simple invoicing for everyone · <Link href="/login" className="hover:text-gray-400">Sign in</Link> · <Link href="/blog" className="hover:text-gray-400">Blog</Link></p>
+        <p className="mb-2">SlateInvoice · Simple invoicing for everyone · <Link href="/login" className="hover:text-gray-400">Sign in</Link> · <Link href="/blog" className="hover:text-gray-400">Blog</Link></p>
+        <p>
+          <Link href="/privacy" className="hover:text-gray-400">Privacy Policy</Link>
+          {' · '}
+          <Link href="/terms" className="hover:text-gray-400">Terms of Service</Link>
+          {' · '}
+          <Link href="/cookies" className="hover:text-gray-400">Cookie Policy</Link>
+          {' · '}
+          <Link href="/refund" className="hover:text-gray-400">Refund Policy</Link>
+        </p>
       </footer>
     </main>
   );
