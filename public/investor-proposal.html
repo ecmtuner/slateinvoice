@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SlateInvoice — Investor Proposal 2026</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0f172a;--navy2:#1e293b;--navy3:#334155;
+  --blue:#3b82f6;--blue2:#2563eb;--blue3:#dbeafe;
+  --teal:#0ea5e9;--green:#10b981;--amber:#f59e0b;--red:#ef4444;
+  --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g400:#94a3b8;--g600:#475569;
+  --r:8px;
+}
+html{font-size:10pt}
+body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;color:#0f172a;background:#fff;line-height:1.6}
+@page{size:letter;margin:.65in .7in .7in .7in}
+@media print{
+  .pb{page-break-after:always;break-after:page}
+  body{font-size:9.5pt}
+  a{color:#2563eb!important;text-decoration:none}
+  .cover{min-height:0;padding:2in 2rem}
+}
+
+/* COVER */
+.cover{min-height:100vh;background:linear-gradient(155deg,#0f172a 0%,#1e293b 55%,#162040 100%);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:3rem 2rem;position:relative;overflow:hidden}
+.cover::before{content:'';position:absolute;top:-120px;left:-120px;width:550px;height:550px;background:radial-gradient(circle,rgba(59,130,246,.12) 0%,transparent 68%);pointer-events:none}
+.cover::after{content:'';position:absolute;bottom:-80px;right:-60px;width:400px;height:400px;background:radial-gradient(circle,rgba(14,165,233,.09) 0%,transparent 68%);pointer-events:none}
+.c-logo{font-size:5rem;margin-bottom:1.4rem;filter:drop-shadow(0 0 30px rgba(59,130,246,.35))}
+.c-brand{font-size:3.2rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
+.c-brand span{color:#3b82f6}
+.c-tag{font-size:1.22rem;color:#94a3b8;margin-bottom:2.5rem}
+.c-badge{display:inline-block;background:rgba(59,130,246,.16);border:1px solid rgba(59,130,246,.42);color:#93c5fd;padding:.38rem 1.3rem;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3.5rem}
+.c-div{width:72px;height:3px;background:linear-gradient(90deg,#3b82f6,#0ea5e9);border-radius:2px;margin:0 auto 2.5rem}
+.c-meta{color:#64748b;font-size:.88rem;line-height:2.3}
+.c-meta strong{color:#94a3b8}
+.c-conf{position:absolute;bottom:1.8rem;left:50%;transform:translateX(-50%);font-size:.68rem;color:#475569;letter-spacing:.12em;text-transform:uppercase;border:1px solid #334155;padding:.28rem .9rem;border-radius:4px;white-space:nowrap}
+
+/* PAGE */
+.pg{max-width:860px;margin:0 auto;padding:3.5rem 2rem}
+
+/* TOC */
+.toc-h{font-size:2rem;font-weight:800;color:#0f172a;margin-bottom:2rem;padding-bottom:.7rem;border-bottom:3px solid #3b82f6;display:inline-block}
+.toc-list{list-style:none;counter-reset:t}
+.toc-list li{counter-increment:t;display:flex;align-items:baseline;padding:.52rem 0;border-bottom:1px dotted #e2e8f0}
+.toc-list li::before{content:counter(t,decimal-leading-zero);color:#3b82f6;font-weight:700;font-size:.77rem;min-width:2.8rem;flex-shrink:0}
+.toc-n{flex:1;font-weight:600;color:#0f172a;font-size:.94rem}
+.toc-s{font-size:.78rem;color:#475569;font-weight:400;margin-left:.5rem}
+
+/* SECTION HEADER */
+.snum{font-size:.72rem;font-weight:700;color:#3b82f6;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.28rem}
+.stit{font-size:1.85rem;font-weight:800;color:#0f172a;line-height:1.2;margin-bottom:.55rem}
+.ssub{font-size:.96rem;color:#475569;line-height:1.7;margin-bottom:.4rem}
+.srul{width:46px;height:4px;background:linear-gradient(90deg,#2563eb,#0ea5e9);border-radius:2px;margin:.75rem 0 1.8rem}
+
+/* TYPE */
+h2{font-size:1.28rem;font-weight:700;color:#0f172a;margin:1.7rem 0 .55rem}
+h3{font-size:1.04rem;font-weight:700;color:#1e293b;margin:1.35rem 0 .4rem}
+p{margin-bottom:.82rem;font-size:.93rem;color:#1e293b;line-height:1.72}
+ul,ol{margin:.35rem 0 .85rem 1.35rem}
+li{font-size:.91rem;margin-bottom:.3rem;line-height:1.6;color:#1e293b}
+strong{color:#0f172a}
+
+/* STAT CARDS */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:.9rem;margin:1.4rem 0}
+.sc{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1.1rem;text-align:center}
+.sc.acc{background:#0f172a;border-color:#334155}
+.sc.blu{background:#dbeafe;border-color:#bfdbfe}
+.sc.grn{background:#d1fae5;border-color:#a7f3d0}
+.sc.red{background:#fee2e2;border-color:#fecaca}
+.sv{font-size:1.65rem;font-weight:800;color:#3b82f6;line-height:1;margin-bottom:.25rem}
+.sc.acc .sv{color:#60a5fa}.sc.blu .sv{color:#2563eb}.sc.grn .sv{color:#059669}.sc.red .sv{color:#dc2626}
+.sl{font-size:.73rem;color:#475569;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.sc.acc .sl{color:#94a3b8}.sc.blu .sl{color:#1d4ed8}.sc.grn .sl{color:#065f46}.sc.red .sl{color:#9f1239}
+
+/* BOXES */
+.hbox{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-left:4px solid #3b82f6;border-radius:0 8px 8px 0;padding:1.05rem 1.35rem;margin:1.35rem 0}
+.hbox p{margin:0;color:#1e40af;font-weight:500;font-size:.92rem}
+.cbox{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1.05rem 1.35rem;margin:1.35rem 0}
+.cbox-t{font-size:.72rem;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem}
+.cbox p{margin:0;font-size:.87rem;color:#1e293b}
+.gbox{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-left:4px solid #10b981;border-radius:0 8px 8px 0;padding:1.05rem 1.35rem;margin:1.35rem 0}
+.gbox p{margin:0;color:#065f46;font-weight:500;font-size:.92rem}
+
+/* FEATURE GRID */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.82rem;margin:1.35rem 0}
+.fc{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.95rem}
+.fi{font-size:1.35rem;margin-bottom:.3rem}
+.ft{font-size:.86rem;font-weight:700;color:#0f172a;margin-bottom:.18rem}
+.fd{font-size:.77rem;color:#475569;line-height:1.5;margin:0}
+
+/* TABLES */
+.tw{overflow-x:auto;margin:1.35rem 0;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+thead th{background:#0f172a;color:#fff;padding:.68rem .95rem;text-align:left;font-weight:700;font-size:.77rem;letter-spacing:.04em;white-space:nowrap}
+thead th:first-child{border-radius:8px 0 0 0}thead th:last-child{border-radius:0 8px 0 0}
+tbody tr{border-bottom:1px solid #e2e8f0}
+tbody tr:last-child{border-bottom:none}
+tbody tr:nth-child(even){background:#f8fafc}
+tbody td{padding:.62rem .95rem;color:#1e293b;vertical-align:middle}
+tfoot td{padding:.62rem .95rem;background:#0f172a;color:#fff;font-weight:700;font-size:.82rem}
+.th{background:#eff6ff!important;font-weight:700;color:#2563eb!important}
+.ck{color:#10b981;font-weight:700;font-size:1rem}
+.cx{color:#ef4444;font-size:1rem}
+.cp{color:#f59e0b;font-size:.85rem}
+.ctr{text-align:right}.ctc{text-align:center}
+
+/* PRICING */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(164px,1fr));gap:.95rem;margin:1.35rem 0}
+.pc{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1.25rem .95rem;text-align:center;position:relative}
+.pc.pop{background:#0f172a;border-color:#3b82f6;color:#fff}
+.pbadge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#3b82f6;color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .68rem;border-radius:999px;white-space:nowrap}
+.pn{font-size:.8rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.42rem}
+.pc.pop .pn{color:#94a3b8}
+.pp{font-size:1.9rem;font-weight:800;color:#0f172a;line-height:1}
+.pc.pop .pp{color:#fff}
+.ppd{font-size:.7rem;color:#475569;margin-bottom:.7rem}
+.pc.pop .ppd{color:#94a3b8}
+.pf{list-style:none;margin:0;padding:0;text-align:left;font-size:.76rem}
+.pf li{padding:.17rem 0;color:#475569;margin:0}
+.pc.pop .pf li{color:#cbd5e1}
+.pf li::before{content:'✓ ';color:#10b981;font-weight:700}
+
+/* BAR CHART */
+.bchart{margin:1.3rem 0}
+.brow{display:flex;align-items:center;margin-bottom:.7rem;gap:.65rem}
+.blbl{min-width:82px;font-size:.75rem;font-weight:600;color:#475569;text-align:right}
+.btrk{flex:1;background:#f1f5f9;border-radius:4px;height:25px;overflow:hidden}
+.bfil{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:7px}
+.bfil.bl{background:linear-gradient(90deg,#2563eb,#3b82f6)}
+.bfil.gr{background:linear-gradient(90deg,#059669,#10b981)}
+.bfil.tl{background:linear-gradient(90deg,#0369a1,#0ea5e9)}
+.bv{font-size:.69rem;font-weight:700;color:#fff;white-space:nowrap}
+
+/* TIMELINE */
+.tl{position:relative;margin:1.35rem 0;padding-left:1.55rem}
+.tl::before{content:'';position:absolute;left:5px;top:6px;bottom:0;width:2px;background:#e2e8f0}
+.tli{position:relative;margin-bottom:1.35rem}
+.tld{position:absolute;left:-1.55rem;top:4px;width:12px;height:12px;border-radius:50%;border:2px solid #fff}
+.tld.done{background:#10b981;box-shadow:0 0 0 2px #10b981}
+.tld.act{background:#3b82f6;box-shadow:0 0 0 2px #3b82f6}
+.tld.fut{background:#94a3b8;box-shadow:0 0 0 2px #94a3b8}
+.tl-dt{font-size:.7rem;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.14rem}
+.tl-ti{font-size:.92rem;font-weight:700;color:#0f172a;margin-bottom:.18rem}
+.tl-de{font-size:.81rem;color:#475569;margin:0}
+
+/* TEAM */
+.tcard{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1.45rem;margin:1.4rem 0;display:flex;gap:1.4rem;align-items:flex-start}
+.tav{width:62px;height:62px;background:linear-gradient(135deg,#2563eb,#0ea5e9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.75rem;flex-shrink:0}
+.tnm{font-size:1.1rem;font-weight:800;color:#0f172a;margin-bottom:.08rem}
+.ttl{font-size:.78rem;color:#3b82f6;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem}
+.tbi{font-size:.85rem;color:#1e293b;margin-bottom:.65rem;line-height:1.62}
+.bl{display:flex;flex-wrap:wrap;gap:.32rem}
+.bdg{background:#dbeafe;color:#2563eb;font-size:.69rem;font-weight:600;padding:.16rem .52rem;border-radius:999px}
+.bdg.g{background:#d1fae5;color:#065f46}
+.bdg.a{background:#fef3c7;color:#92400e}
+
+/* PIE / FUNDS */
+.fw{display:grid;grid-template-columns:1fr 210px;gap:2rem;align-items:center;margin:1.4rem 0}
+.fit{display:flex;align-items:center;gap:.7rem;margin-bottom:.8rem;padding:.65rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px}
+.fsw{width:13px;height:13px;border-radius:3px;flex-shrink:0}
+.fn{font-size:.82rem;font-weight:700;color:#0f172a;flex:1}
+.fa{font-size:.85rem;font-weight:700;color:#475569;white-space:nowrap}
+.fpp{font-size:.69rem;color:#94a3b8;margin-left:.25rem}
+.pie{width:178px;height:178px;border-radius:50%;background:conic-gradient(#3b82f6 0deg 144deg,#0ea5e9 144deg 240deg,#10b981 240deg 300deg,#f59e0b 300deg 360deg);box-shadow:0 4px 20px rgba(59,130,246,.2);position:relative;margin:0 auto}
+.piec{position:absolute;inset:20%;background:#fff;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.piev{font-size:1rem;font-weight:800;color:#0f172a;line-height:1}
+.piel{font-size:.59rem;color:#475569;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+
+/* INVESTMENT BOX */
+.ibox{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border-radius:12px;padding:2.4rem;color:#fff;text-align:center;margin:2rem 0}
+.ibox h2{font-size:1.85rem;color:#fff;margin-bottom:.42rem}
+.ibox>.ip{color:#94a3b8;margin-bottom:.45rem;font-size:.92rem}
+.iam{font-size:3rem;font-weight:900;color:#60a5fa;line-height:1;margin-bottom:.18rem}
+.ity{font-size:.8rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:1.8rem}
+.tgrd{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-top:1.4rem}
+.ti{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.95rem}
+.tv{font-size:1.25rem;font-weight:800;color:#60a5fa}
+.tlb{font-size:.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-top:.18rem}
+
+/* CONTACT */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:.9rem;margin:1.4rem 0}
+.ci{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.95rem 1.1rem}
+.cl{font-size:.68rem;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.09em;margin-bottom:.25rem}
+.cv{font-size:.88rem;font-weight:600;color:#0f172a}
+
+/* MISC */
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:1.35rem;margin:.9rem 0}
+.pcard{background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;padding:1.1rem}
+.pcard h3{color:#be123c;margin:0 0 .35rem;font-size:.98rem}
+.pcard p{margin:0;font-size:.82rem;color:#9f1239;line-height:1.6}
+.scard{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:1.1rem}
+.scard h3{color:#065f46;margin:0 0 .35rem;font-size:.98rem}
+.scard p{margin:0;font-size:.82rem;color:#064e3b;line-height:1.6}
+hr{border:none;border-top:1px solid #e2e8f0;margin:1.8rem 0}
+.disc{font-size:.72rem;color:#94a3b8;line-height:1.7;padding:1rem;background:#f8fafc;border-radius:8px;margin-top:1rem}
+.adv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.85rem;margin:1.35rem 0}
+.adv-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;border-top:3px solid #3b82f6}
+.adv-num{font-size:1.4rem;font-weight:900;color:#dbeafe;line-height:1;margin-bottom:.25rem}
+.adv-title{font-size:.9rem;font-weight:700;color:#0f172a;margin-bottom:.2rem}
+.adv-desc{font-size:.78rem;color:#475569;line-height:1.55;margin:0}
+.moat-row{display:flex;align-items:flex-start;gap:.85rem;padding:.75rem 0;border-bottom:1px solid #e2e8f0}
+.moat-row:last-child{border-bottom:none}
+.moat-icon{font-size:1.3rem;flex-shrink:0;margin-top:.05rem}
+.moat-text strong{font-size:.9rem;color:#0f172a;display:block;margin-bottom:.18rem}
+.moat-text span{font-size:.81rem;color:#475569;line-height:1.55}
+</style>
+</head>
+<body>
+
+<!-- ======================================================
+  COVER
+====================================================== -->
+<div class="cover pb">
+  <div class="c-logo">🧾</div>
+  <div class="c-brand">Slate<span>Invoice</span></div>
+  <div class="c-tag">Professional Invoicing for the Modern Freelancer</div>
+  <div class="c-badge">Seed Round — Investor Proposal</div>
+  <div class="c-div"></div>
+  <div class="c-meta">
+    <strong>Company:</strong>&nbsp; SlateInvoice, Inc.<br>
+    <strong>Website:</strong>&nbsp; slateinvoice.com<br>
+    <strong>Founder:</strong>&nbsp; Sergey Birioukov &middot; Moonachie, NJ<br>
+    <strong>Stage:</strong>&nbsp; Early — Live Product, Real Revenue<br>
+    <strong>Prepared:</strong>&nbsp; March 2026<br>
+    <strong>Seeking:</strong>&nbsp; $150,000 Seed Round
+  </div>
+  <div class="c-conf">Confidential — For Qualified Investors Only</div>
+</div>
+
+<!-- ======================================================
+  TABLE OF CONTENTS
+====================================================== -->
+<div class="pg pb">
+  <div class="toc-h">Table of Contents</div>
+  <ul class="toc-list">
+    <li><span class="toc-n">Executive Summary</span><span class="toc-s">The 60-second pitch</span></li>
+    <li><span class="toc-n">The Problem</span><span class="toc-s">Who's being underserved and why it costs them</span></li>
+    <li><span class="toc-n">Our Solution</span><span class="toc-s">SlateInvoice's core approach and differentiators</span></li>
+    <li><span class="toc-n">Product Overview</span><span class="toc-s">Features, pricing plans, and tech stack</span></li>
+    <li><span class="toc-n">Market Opportunity</span><span class="toc-s">TAM / SAM / SOM — a $4.5B+ global market</span></li>
+    <li><span class="toc-n">Business Model &amp; Revenue</span><span class="toc-s">SaaS subscriptions + payment processing fees</span></li>
+    <li><span class="toc-n">Competitive Analysis</span><span class="toc-s">FreshBooks, QuickBooks, Wave vs. SlateInvoice</span></li>
+    <li><span class="toc-n">Traction &amp; Milestones</span><span class="toc-s">What's built, shipped, and live</span></li>
+    <li><span class="toc-n">Financial Projections</span><span class="toc-s">MRR / ARR growth model through Month 24</span></li>
+    <li><span class="toc-n">Use of Funds</span><span class="toc-s">How $150K gets deployed for maximum ROI</span></li>
+    <li><span class="toc-n">Go-to-Market Strategy</span><span class="toc-s">Acquisition channels, funnel, and content moat</span></li>
+    <li><span class="toc-n">Team</span><span class="toc-s">Founder background and execution track record</span></li>
+    <li><span class="toc-n">Investment Ask &amp; Terms</span><span class="toc-s">Round structure, use of capital, return scenarios</span></li>
+    <li><span class="toc-n">Contact &amp; Appendix</span><span class="toc-s">How to reach us; supporting data and assumptions</span></li>
+  </ul>
+</div>
+
+<!-- ======================================================
+  01 — EXECUTIVE SUMMARY
+====================================================== -->
+<div class="pg pb">
+  <div class="snum">Section 01</div>
+  <div class="stit">Executive Summary</div>
+  <div class="ssub">SlateInvoice is a modern SaaS invoicing platform purpose-built for the 59 million US freelancers and micro-businesses priced out of FreshBooks and overwhelmed by QuickBooks. We're live, processing real payments, and seeking $150K to accelerate growth.</div>
+  <div class="srul"></div>
+
+  <div class="hbox"><p><strong>The thesis:</strong> The largest segment of the invoicing software market — solo freelancers and micro-businesses — is stuck between clunky free tools and expensive enterprise software designed for accountants. SlateInvoice delivers a cleaner, faster, beautifully simple experience at $7–$25/month, with a built-in online payment page on every invoice. We are 50–75% cheaper than FreshBooks and built for how freelancers actually work.</p></div>
+
+  <div class="sgrid">
+    <div class="sc blu"><div class="sv">$4.5B+</div><div class="sl">Global Market Size</div></div>
+    <div class="sc blu"><div class="sv">59M</div><div class="sl">US Freelancers (TAM)</div></div>
+    <div class="sc blu"><div class="sv">10%+</div><div class="sl">YoY Market Growth</div></div>
+    <div class="sc blu"><div class="sv">$840K</div><div class="sl">Projected ARR · Mo. 24</div></div>
+    <div class="sc blu"><div class="sv">8:1</div><div class="sl">LTV to CAC Ratio</div></div>
+    <div class="sc blu"><div class="sv">$150K</div><div class="sl">Seed Round Sought</div></div>
+  </div>
+
+  <h2>What We've Built</h2>
+  <p>SlateInvoice is a fully functional, production-deployed SaaS product. It is <strong>not a prototype</strong>. It's live at <strong>slateinvoice.com</strong>, deployed on Railway, processing real Stripe payments with subscription management, webhooks, and a growing SEO-driven blog. A solo founder shipped:</p>
+  <ul>
+    <li>Full invoicing platform: templates, auto-numbering, logo upload, PDF export, multi-currency</li>
+    <li>Client database with autofill, products/services library, recurring invoices, estimates &amp; receipts</li>
+    <li><strong>Pay Invoice Online</strong> — every invoice gets a unique public payment page at <code>/pay/[id]</code>; clients pay by card via Stripe, invoice auto-marks paid via webhook</li>
+    <li>Auto-calculated taxes, discounts, and fees; dark mode dashboard; Google Ads conversion tracking</li>
+  </ul>
+
+  <h2>Why Now</h2>
+  <p>The freelance economy is growing. The IRS reports 59 million Americans freelance in some capacity — nearly <strong>36% of the US workforce</strong>. Post-pandemic remote normalization, rising contractor use, and the gig economy are structural tailwinds that won't reverse. The vast majority of these freelancers need invoicing software — yet the market is dominated by products priced and designed for SMBs and accounting firms.</p>
+
+  <h2>The Investment</h2>
+  <p>We are raising <strong>$150,000 in a seed round</strong>. Capital will fund Google Ads and SEO ($60K), engineering for mobile app and integrations ($40K), infrastructure &amp; operations ($25K), and working capital runway ($25K). With this investment, we project <strong>$10,400 MRR at Month 12</strong> and <strong>$840K ARR at Month 24</strong> — a 5,600% MRR increase from today.</p>
+
+  <div class="gbox"><p><strong>Bottom line:</strong> Strong product. Proven founder. Massive market. Competitive pricing. An LTV:CAC ratio of 8:1 means every marketing dollar compounds. We're not asking for belief — we're asking for fuel.</p></div>
+</div>
+
+<!-- ======================================================
+  02 — THE PROBLEM
+====================================================== -->
+<div class="pg pb">
+  <div class="snum">Section 02</div>
+  <div class="st
+    <div class="sc"><div class="sv" style="color:#ef4444">$6,000</div><div class="sl">Avg Annual Income Lost to Late/Unpaid Invoices per Freelancer</div></div>
+    <div class="sc"><div class="sv" style="color:#ef4444">3.49%</div><div class="sl">PayPal Invoice Fee (vs SlateInvoice's flat subscription)</div></div>
+    <div class="sc"><div class="sv" style="color:#3b82f6">$4.5B+</div><div class="sl">Global Invoicing Software Market (Growing 10%+ YoY)</div></div>
+  </div>
+</div>
+
+<!-- ==================== 03 OUR SOLUTION ==================== -->
+<div class="pg pb">
+  <div class="snum">Section 03</div>
+  <div class="stit">Our Solution</div>
+  <div class="ssub">Professional invoicing at half the price — with a payment link built into every invoice.</div>
+  <div class="srul"></div>
+  <p>SlateInvoice is a clean, fast, and affordable invoicing platform built specifically for freelancers and small businesses. It does what FreshBooks does — for $7/month instead of $20/month — with one feature no competitor has nailed: a public payment page on every invoice.</p>
+  <div class="hibox">
+    <div class="hi-ico">🔗</div>
+    <div>
+      <strong>The Pay Invoice Online Feature</strong><br>
+      Every invoice created in SlateInvoice gets a unique public URL at <code>slateinvoice.com/pay/[id]</code>. Share it via email, text, or WhatsApp. Your client clicks the link, sees the invoice, and pays by card — no login, no account, no friction. The invoice automatically marks itself as paid via Stripe webhook. This is the last mile of getting paid, solved.
+    </div>
+  </div>
+  <h2>Core Philosophy</h2>
+  <div class="twocol">
+    <div class="pcard"><h3>⚡ Fast</h3><p>Create and send a professional invoice in under 2 minutes. No onboarding, no tutorials, no setup wizard.</p></div>
+    <div class="pcard"><h3>💰 Affordable</h3><p>Starter at $7/mo. Freelancer at $15/mo. Business at $25/mo. Up to 75% cheaper than FreshBooks for equivalent features.</p></div>
+    <div class="pcard"><h3>🎯 Focused</h3><p>No payroll module, no inventory, no audit trail. Just invoicing, client management, and getting paid — done well.</p></div>
+    <div class="pcard"><h3>📱 Modern</h3><p>Built on Next.js 14, Railway, PostgreSQL, Stripe. Scalable, fast, and ready for mobile.</p></div>
+  </div>
+</div>
+
+<!-- ==================== 04 PRODUCT OVERVIEW ==================== -->
+<div class="pg pb">
+  <div class="snum">Section 04</div>
+  <div class="stit">Product Overview</div>
+  <div class="ssub">A complete invoicing system — built, deployed, and processing real payments today.</div>
+  <div class="srul"></div>
+  <h2>Features Built & Live</h2>
+  <table class="tbl">
+    <thead><tr><th>Feature</th><th>Description</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Professional Invoices</td><td>Auto-numbered, templates, logo upload, multi-currency</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>Estimates & Receipts</td><td>Send estimates, convert to invoice in one click, auto-generate receipts</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>Client Database</td><td>Save client details, autofill on new invoices, track lifetime earnings per client</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>Products/Services Library</td><td>Save common services with prices, select from dropdown when invoicing</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>Taxes, Discounts & Fees</td><td>Apply as % or flat rate, auto-calculated, shown on invoice</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>PDF Export</td><td>Print-ready PDF with clean layout, payment link printed at bottom</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>Pay Invoice Online</td><td>Public payment page per invoice — client pays by card, invoice auto-marks paid</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>Recurring Invoices</td><td>Automatic recurring billing for retainer clients</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>Stripe Subscriptions</td><td>Full subscription management with webhooks, plan gating, customer portal</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>Dark Mode Dashboard</td><td>Clean, modern dashboard showing outstanding, paid, overdue at a glance</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>SEO Blog</td><td>10+ articles targeting high-volume freelance/invoicing keywords</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>Google Ads Tracking</td><td>Conversion tracking installed for paid acquisition</td><td class="badge-g">Live ✓</td></tr>
+      <tr><td>Mobile App</td><td>React Native / Expo app for iOS & Android</td><td class="badge-y">Q2 2026</td></tr>
+      <tr><td>Integrations</td><td>QuickBooks export, Zapier, API access</td><td class="badge-y">Q3 2026</td></tr>
+      <tr><td>Tax Filing Prep</td><td>Auto-categorize income, generate Schedule C data</td><td class="badge-y">Q4 2026</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ==================== 05 MARKET OPPORTUNITY ==================== -->
+<div class="pg pb">
+  <div class="snum">Section 05</div>
+  <div class="stit">Market Opportunity</div>
+  <div class="ssub">A $4.5B+ market growing at 10%+ annually — and the best-fit segment is underserved.</div>
+  <div class="srul"></div>
+  <div class="sgrid">
+    <div class="sc"><div class="sv">59M</div><div class="sl">Freelancers in the US (Upwork/Freelancers Union 2024)</div></div>
+    <div class="sc"><div class="sv">$4.5B+</div><div class="sl">Global Invoicing Software Market Size</div></div>
+    <div class="sc"><div class="sv">10%+</div><div class="sl">Annual Market Growth Rate (CAGR)</div></div>
+    <div class="sc"><div class="sv">36%</div><div class="sl">US Workforce Now Freelances in Some Capacity</div></div>
+  </div>
+  <h2>Total Addressable Market (TAM)</h2>
+  <p>The global invoicing software market is valued at $4.5B+ and is projected to reach $7.5B by 2030. The US alone accounts for roughly 40% of this market. With 59 million freelancers and 33 million small businesses, the demand for simple, affordable invoicing is structural — not cyclical.</p>
+  <h2>Serviceable Addressable Market (SAM)</h2>
+  <p>Our target: US-based solo freelancers and micro-businesses (1-10 employees) who currently use spreadsheets, Word documents, PayPal, or free tools — and are ready to upgrade for under $20/month. Conservative estimate: 8 million potential users in the US alone.</p>
+  <h2>Serviceable Obtainable Market (SOM)</h2>
+  <p>A realistic 24-month target of 5,000 paying subscribers represents 0.06% of the SAM. At $14 average ARPU, that's $70,000 MRR ($840K ARR) — achievable with focused paid acquisition and organic SEO.</p>
+  <h2>Why This Market, Why Now</h2>
+  <div class="twocol">
+    <div class="pcard"><h3>📈 Freelance economy is structural</h3><p>Remote work normalization, rise of independent contractors, and portfolio careers are permanent trends. The IRS estimates 30%+ of US workers will be fully self-employed by 2030.</p></div>
+    <div class="pcard"><h3>💸 Incumbents are overpriced</h3><p>FreshBooks raised prices 3x in 5 years. QuickBooks now starts at $35/mo. The market is creating a price gap at the low end that SlateInvoice fills precisely.</p></div>
+    <div class="pcard"><h3>🔍 SEO opportunity is open</h3><p>Keywords like "free invoice generator" get 500K+ monthly searches. The top results are outdated tools with poor UX. A modern, well-designed product ranks.</p></div>
+    <div class="pcard"><h3>💳 Online payment adoption</h3><p>Post-pandemic, clients expect to pay online. "Send me a check" is becoming unacceptable. The payment link feature directly addresses this shift.</p></div>
+  </div>
+</div>
+
+<!-- ==================== 06 BUSINESS MODEL ==================== -->
+<div class="pg pb">
+  <div class="snum">Section 06</div>
+  <div class="stit">Business Model & Revenue</div>
+  <div class="ssub">Subscription SaaS with a secondary payment processing revenue stream.</div>
+  <div class="srul"></div>
+  <h2>Primary Revenue: Subscriptions</h2>
+  <table class="tbl">
+    <thead><tr><th>Plan</th><th>Price</th><th>Key Features</th><th>Processing Fee</th></tr></thead>
+    <tbody>
+      <tr><td>Free</td><td>$0/mo</td><td>5 invoices/mo, 3 clients, basic template</td><td>N/A</td></tr>
+      <tr><td>Starter</td><td>$7/mo</td><td>Unlimited clients, PDF, payment links, estimates</td><td>1% of payments</td></tr>
+      <tr><td>Freelancer</td><td>$15/mo</td><td>Unlimited invoices, recurring, priority support</td><td>1% of payments</td></tr>
+      <tr><td>Business</td><td>$25/mo</td><td>No processing fee, advanced reporting, early access</td><td>0%</td></tr>
+    </tbody>
+  </table>
+  <h2>Secondary Revenue: Payment Processing</h2>
+  <p>On Starter and Freelancer plans, SlateInvoice charges a 1% fee on payments processed through the Pay Invoice Online feature. A freelancer billing $5,000/month generates $50 in additional revenue — on top of the subscription fee. Business plan users pay $0 in processing fees, incentivizing upgrade.</p>
+  <h2>Future Revenue Streams</h2>
+  <div class="twocol">
+    <div class="pcard"><h3>🏷️ White-Label Licensing</h3><p>License SlateInvoice to accounting firms, tuner shops, and agencies who want branded invoicing for their clients. $99–$299/mo per licensee.</p></div>
+    <div class="pcard"><h3>🔌 API Access</h3><p>Charge developers and businesses for API access to invoice creation and payment processing. Opens a B2B revenue stream.</p></div>
+    <div class="pcard"><h3>📊 Tax Filing Prep</h3><p>One-click Schedule C generation, quarterly estimate calculations. Upsell to existing subscribers at $9–$19/filing.</p></div>
+    <div class="pcard"><h3>📱 Mobile Premium</h3><p>Mobile app with offline mode and camera-scan expenses. Premium add-on at $3–$5/mo.</p></div>
+  </div>
+  <h2>Unit Economics</h2>
+  <div class="sgrid">
+    <div class="sc"><div class="sv" style="color:#10b981">$14</div><div class="sl">Average Revenue Per User (ARPU)</div></div>
+    <div class="sc"><div class="sv" style="color:#10b981">$168</div><div class="sl">Estimated LTV (12-month retention)</div></div>
+    <div class="sc"><div class="sv" style="color:#3b82f6">$20</div><div class="sl">Estimated CAC (Google Ads + SEO blended)</div></div>
+    <div class="sc"><div class="sv" style="color:#10b981">8.4:1</div><div class="sl">LTV:CAC Ratio</div></div>
+  </div>
+</div>
+
+<!-- ==================== 07 COMPETITIVE ANALYSIS ==================== -->
+<div class="pg pb">
+  <div class="snum">Section 07</div>
+  <div class="stit">Competitive Analysis</div>
+  <div class="ssub">Cheaper than FreshBooks, simpler than QuickBooks, better than Wave.</div>
+  <div class="srul"></div>
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>SlateInvoice</th>
+        <th>FreshBooks</th>
+        <th>QuickBooks</th>
+        <th>Wave</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Starting Price</td><td><strong style="color:#10b981">$7/mo</strong></td><td>$20/mo</td><td>$35/mo</td><td>Free*</td></tr>
+      <tr><td>Unlimited Invoices</td><td>✅ Freelancer+</td><td>✅ All plans</td><td>✅ All plans</td><td>✅</td></tr>
+      <tr><td>Client Database</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      <tr><td>PDF Export</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      <tr><td>Recurring Invoices</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      <tr><td>Estimates</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      <tr><td>Pay Invoice Online Link</td><td><strong style="color:#10b981">✅ Every invoice</strong></td><td>⚠️ Portal only</td><td>⚠️ Portal only</td><td>⚠️ Limited</td></tr>
+      <tr><td>Auto-Mark Paid via Webhook</td><td><strong style="color:#10b981">✅</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
+      <tr><td>Dark Mode</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+      <tr><td>No Ad Business Model</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+      <tr><td>Full Accounting Suite</td><td>❌ (by design)</td><td>⚠️ Basic</td><td>✅</td><td>⚠️ Basic</td></tr>
+      <tr><td>Processing Fee</td><td>1% (free on Business)</td><td>3.49% + $0.30</td><td>2.9% + $0.25</td><td>2.9% + $0.60</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.8rem;color:#64748b;margin-top:.5rem">*Wave is free but monetizes through financial product upsells and charges 2.9%+ per transaction.</p>
+  <h2>Our Moat</h2>
+  <div class="twocol">
+    <div class="pcard"><h3>💸 Price advantage</h3><p>We are 50–75% cheaper than FreshBooks for equivalent features. In a market where freelancers are cost-conscious, this is a durable advantage.</p></div>
+    <div class="pcard"><h3>🔗 Pay Invoice Online</h3><p>No competitor offers a shareable, no-login payment page per invoice that auto-marks the invoice paid via webhook. This is our product differentiator.</p></div>
+    <div class="pcard"><h3>📈 SEO content moat</h3><p>15+ targeted blog posts already live. As they rank, CAC from organic traffic drops toward $0 — while paid competitors keep spending.</p></div>
+    <div class="pcard"><h3>⚡ Speed of iteration</h3><p>Sole founder + AI-assisted development means features ship in days, not quarters. We can out-iterate incumbents on responsiveness to user needs.</p></div>
+  </div>
+</div>
+
+<!-- ==================== 08 TRACTION ==================== -->
+<div class="pg pb">
+  <div class="snum">Section 08</div>
+  <div class="stit">Traction & Milestones</div>
+  <div class="ssub">Live product, real payments, growing content footprint.</div>
+  <div class="srul"></div>
+  <h2>What's Live Today</h2>
+  <div class="twocol">
+    <div class="pcard"><h3>✅ Production Deployment</h3><p>slateinvoice.com is live on Railway with PostgreSQL. Real Stripe payments processing. SSL, custom domain, webhook infrastructure all operational.</p></div>
+    <div class="pcard"><h3>✅ Stripe Subscriptions</h3><p>Full subscription lifecycle: signup → checkout → webhook → plan gating → customer portal → cancellation. All tested end-to-end.</p></div>
+    <div class="pcard"><h3>✅ Pay Invoice Online</h3><p>Every invoice gets a /pay/[id] URL. Client pays by card. Stripe webhook fires. Invoice auto-marks paid. Feature is live and tested.</p></div>
+    <div class="pcard"><h3>✅ SEO Content</h3><p>10+ blog posts published targeting "how to write an invoice," "best invoicing software 2025," "invoice vs receipt," and more high-volume queries.</p></div>
+    <div class="pcard"><h3>✅ Google Ads Ready</h3><p>Conversion tracking tag (AW-18018950552) installed on all pages. Campaign infrastructure ready to activate at funding.</p></div>
+    <div class="pcard"><h3>✅ Legal Compliance</h3><p>Privacy Policy, Terms of Service, Cookie Policy, and Refund Policy live. GDPR/CCPA baseline coverage in place.</p></div>
+  </div>
+  <h2>Development Timeline</h2>
+  <table class="tbl">
+    <thead><tr><th>Milestone</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Core invoicing platform built</td><td class="badge-g">Complete</td></tr>
+      <tr><td>Stripe subscriptions integrated</td><td class="badge-g">Complete</td></tr>
+      <tr><td>Pay Invoice Online feature</td><td class="badge-g">Complete</td></tr>
+      <tr><td>slateinvoice.com deployed with custom domain</td><td class="badge-g">Complete</td></tr>
+      <tr><td>SEO blog (10+ posts)</td><td class="badge-g">Complete</td></tr>
+      <tr><td>Google Ads conversion tracking</td><td class="badge-g">Complete</td></tr>
+      <tr><td>Legal pages</td><td class="badge-g">Complete</td></tr>
+      <tr><td>First 100 paying users</td><td class="badge-y">Q2 2026</td></tr>
+      <tr><td>Mobile app (iOS & Android)</td><td class="badge-y">Q2 2026</td></tr>
+      <tr><td>500 paying users / $7,000 MRR</td><td class="badge-y">Q3 2026</td></tr>
+      <tr><td>QuickBooks & Zapier integrations</td><td class="badge-y">Q3 2026</td></tr>
+      <tr><td>1,000 paying users / $14,000 MRR</td><td class="badge-y">Q4 2026</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ==================== 09 FINANCIAL PROJECTIONS ==================== -->
+<div class="pg pb">
+  <div class="snum">Section 09</div>
+  <div class="stit">Financial Projections</div>
+  <div class="ssub">Conservative 24-month model based on blended CAC of $20 and 12-month average retention.</div>
+  <div class="srul"></div>
+  <h2>MRR Growth Projections</h2>
+  <table class="tbl">
+    <thead>
+      <tr><th>Period</th><th>Paying Users</th><th>Avg ARPU</th><th>MRR</th><th>ARR Run Rate</th><th>Cumulative Revenue</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Month 1</td><td>10</td><td>$10</td><td>$100</td><td>$1,200</td><td>$100</td></tr>
+      <tr><td>Month 3</td><td>50</td><td>$11</td><td>$550</td><td>$6,600</td><td>$1,200</td></tr>
+      <tr><td>Month 6</td><td>200</td><td>$12</td><td>$2,400</td><td>$28,800</td><td>$9,000</td></tr>
+      <tr><td>Month 9</td><td>450</td><td>$13</td><td>$5,850</td><td>$70,200</td><td>$30,000</td></tr>
+      <tr><td>Month 12</td><td>800</td><td>$13</td><td><strong>$10,400</strong></td><td>$124,800</td><td>$70,000</td></tr>
+      <tr><td>Month 18</td><td>2,000</td><td>$14</td><td><strong>$28,000</strong></td><td>$336,000</td><td>$220,000</td></tr>
+      <tr><td>Month 24</td><td>5,000</td><td>$14</td><td><strong style="color:#10b981">$70,000</strong></td><td><strong style="color:#10b981">$840,000</strong></td><td>$600,000</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Visual Growth Trajectory</h2>
+  <div style="margin:1.5rem 0;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1.5rem">
+    <div style="display:flex;align-items:flex-end;gap:6px;height:160px;justify-content:space-around">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="background:#3b82f6;border-radius:4px 4px 0 0;width:36px" title="$100 MRR" class="bar-h" data-h="1"></div><div style="font-size:.65rem;color:#64748b">M1</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="background:#3b82f6;border-radius:4px 4px 0 0;width:36px;height:4px"></div><div style="font-size:.65rem;color:#64748b">M3</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="background:#3b82f6;border-radius:4px 4px 0 0;width:36px;height:10px"></div><div style="font-size:.65rem;color:#64748b">M6</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="background:#3b82f6;border-radius:4px 4px 0 0;width:36px;height:25px"></div><div style="font-size:.65rem;color:#64748b">M9</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="background:#3b82f6;border-radius:4px 4px 0 0;width:36px;height:44px"></div><div style="font-size:.65rem;color:#64748b">M12</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="background:#2563eb;border-radius:4px 4px 0 0;width:36px;height:95px"></div><div style="font-size:.65rem;color:#64748b">M18</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="background:#1d4ed8;border-radius:4px 4px 0 0;width:36px;height:150px"></div><div style="font-size:.65rem;color:#64748b">M24</div>
+      </div>
+    </div>
+    <div style="border-top:1px solid #e2e8f0;margin-top:8px;padding-top:6px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:.7rem;color:#64748b">MRR Growth — Month 1 to Month 24</span>
+      <span style="font-size:.75rem;font-weight:700;color:#10b981">Target: $70,000 MRR at Month 24</span>
+    </div>
+  </div>
+
+  <h2>Key Assumptions</h2>
+  <table class="tbl">
+    <thead><tr><th>Metric</th><th>Assumption</th><th>Basis</th></tr></thead>
+    <tbody>
+      <tr><td>Blended CAC</td><td>$20</td><td>Google Ads $25 CAC + SEO $0 blended</td></tr>
+      <tr><td>Average Retention</td><td>12 months</td><td>Industry avg for SMB SaaS tools</td></tr>
+      <tr><td>ARPU Growth</td><td>$11 → $14</td><td>Upsell from Starter to Freelancer/Business</td></tr>
+      <tr><td>Churn Rate</td><td>5%/mo (improving to 3%)</td><td>Early-stage SaaS benchmark</td></tr>
+      <tr><td>Processing Revenue</td><td>Not included</td><td>Conservative — upside only</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ==================== 10 USE OF FUNDS ==================== -->
+<div class="pg pb">
+  <div class="snum">Section 10</div>
+  <div class="stit">Use of Funds</div>
+  <div class="ssub">$150,000 seed round — deployed against acquisition, engineering, and runway.</div>
+  <div class="srul"></div>
+  <div class="twocol">
+    <div>
+      <table class="tbl">
+        <thead><tr><th>Category</th><th>Amount</th><th>% of Round</th></tr></thead>
+        <tbody>
+          <tr><td>📣 Marketing & Paid Acquisition</td><td>$60,000</td><td>40%</td></tr>
+          <tr><td>⚙️ Engineering & Product</td><td>$40,000</td><td>27%</td></tr>
+          <tr><td>🏗️ Operations & Infrastructure</td><td>$25,000</td><td>17%</td></tr>
+          <tr><td>💼 Working Capital & Runway</td><td>$25,000</td><td>17%</td></tr>
+          <tr style="font-weight:700"><td>Total</td><td>$150,000</td><td>100%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <!-- Simple visual pie approximation -->
+      <div style="background:linear-gradient(135deg,#3b82f6 0% 40%,#2563eb 40% 67%,#1d4ed8 67% 83%,#1e40af 83% 100%);border-radius:50%;width:160px;height:160px;margin:0 auto 1rem"></div>
+      <div style="font-size:.75rem;display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+        <div><span style="display:inline-block;width:10px;height:10px;background:#3b82f6;border-radius:2px;margin-right:4px"></span>Marketing 40%</div>
+        <div><span style="display:inline-block;width:10px;height:10px;background:#2563eb;border-radius:2px;margin-right:4px"></span>Engineering 27%</div>
+        <div><span style="display:inline-block;width:10px;height:10px;background:#1d4ed8;border-radius:2px;margin-right:4px"></span>Operations 17%</div>
+        <div><span style="display:inline-block;width:10px;height:10px;background:#1e40af;border-radius:2px;margin-right:4px"></span>Runway 17%</div>
+      </div>
+    </div>
+  </div>
+  <h2>Marketing & Paid Acquisition — $60,000</h2>
+  <p>Primary channel: Google Ads targeting high-intent keywords ("invoice software," "send invoice online," "FreshBooks alternative"). Secondary: SEO content amplification, social media, and creator partnerships. At a $20 blended CAC, $60K acquires ~3,000 customers — enough to reach $42,000 MRR on paid alone.</p>
+  <h2>Engineering & Product — $40,000</h2>
+  <p>Priorities: (
+1) Mobile app for iOS & Android (React Native/Expo), (2) QuickBooks/Zapier integrations, (3) advanced reporting and team features for the Business plan, (4) automated payment reminders.</p>
+  <h2>Operations & Infrastructure — $25,000</h2>
+  <p>Railway hosting at scale, CDN, database backups, security audits, customer support tooling, legal/accounting for the entity.</p>
+  <h2>Working Capital & Runway — $25,000</h2>
+  <p>12 months of founder runway while product reaches self-sustaining MRR. Ensures no forced pivots due to personal financial pressure.</p>
+</div>
+
+<!-- ==================== 11 GO TO MARKET ==================== -->
+<div class="pg pb">
+  <div class="snum">Section 11</div>
+  <div class="stit">Go-to-Market Strategy</div>
+  <div class="ssub">Three channels: paid search, organic SEO, and word-of-mouth flywheel.</div>
+  <div class="srul"></div>
+  <h2>Channel 1: Google Ads (Immediate)</h2>
+  <p>Target keywords: "invoice software," "best invoicing app freelancers," "FreshBooks alternative," "free invoice generator," "send invoice online." Estimated CPC: $2–$5. Conversion rate target: 3–5%. Conversion tracking already installed. Budget: $5,000/mo post-funding.</p>
+  <h2>Channel 2: SEO Content (Compounding)</h2>
+  <p>15+ blog posts already published targeting high-volume, bottom-of-funnel queries. "How to write a professional invoice" alone gets 40K+ monthly searches. As posts rank, organic CAC approaches $0 and compounds over time. Target: 30% of new signups from organic within 12 months.</p>
+  <h2>Channel 3: Word-of-Mouth & Referrals</h2>
+  <p>Every invoice sent from SlateInvoice includes "Powered by SlateInvoice" in the footer (removable on Business plan). The Pay Invoice Online page is seen by every client who pays an invoice — each one is a potential new customer. Referral program planned for Q3 2026.</p>
+  <h2>Channel 4: Vertical Communities</h2>
+  <p>Target: freelancer communities on Reddit (r/freelance, r/forhire), Facebook Groups, Discord servers. Authentic participation + free plan converts community members to users. Budget: time, not money.</p>
+  <h2>Channel 5: White-Label Partnerships</h2>
+  <p>Partner with accounting firms, co-working spaces, and professional associations to offer SlateInvoice as a branded tool for their members. Pipeline: ECMTuner community, automotive industry networks.</p>
+</div>
+
+<!-- ==================== 12 TEAM ==================== -->
+<div class="pg pb">
+  <div class="snum">Section 12</div>
+  <div class="stit">Team</div>
+  <div class="ssub">A founder who builds, ships, and operates — with a track record to prove it.</div>
+  <div class="srul"></div>
+  <div class="hibox">
+    <div class="hi-ico">👤</div>
+    <div>
+      <strong style="font-size:1.1rem">Sergey Birioukov — Founder & CEO</strong><br>
+      <span style="color:#475569">Moonachie, NJ | slateinvoice.com</span>
+    </div>
+  </div>
+  <h2>Track Record</h2>
+  <p>Sergey is a serial entrepreneur and full-stack builder with a demonstrated ability to take ideas from concept to revenue-generating product. He does not just design — he builds, ships, markets, and operates.</p>
+  <table class="tbl">
+    <thead><tr><th>Product</th><th>Description</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>ECMTuner</td><td>ECU tuning business, ecmtuner.com, NYC metro area. BMW, Mercedes, Porsche, Aston Martin. $1K–$2.8K per tune.</td><td class="badge-g">Revenue-generating</td></tr>
+      <tr><td>SlateInvoice</td><td>This product. Invoicing SaaS, live at slateinvoice.com with real Stripe payments.</td><td class="badge-g">Live</td></tr>
+      <tr><td>LogIQ</td><td>AI-powered ECU log analyzer SaaS. Next.js + Claude AI. Freemium + $4.99 one-time.</td><td class="badge-g">Live</td></tr>
+      <tr><td>TuneScore</td><td>Standalone mobile log analyzer app (iOS/Android). Expo/React Native.</td><td class="badge-g">Live</td></tr>
+      <tr><td>PerformanceIQ</td><td>Full-featured performance car app — GPS meter, OBD2, Race Room, Leaderboard, Calculators.</td><td class="badge-g">Live on Expo</td></tr>
+      <tr><td>EasyFreePayStubGenerator</td><td>SEO-driven pay stub SaaS targeting 550K/mo search volume. Free preview → $5 download.</td><td class="badge-g">Live</td></tr>
+    </tbody>
+  </table>
+  <h2>Why This Founder Wins</h2>
+  <div class="twocol">
+    <div class="pcard"><h3>🔨 Builder</h3><p>Full-stack development across Next.js, React Native, PostgreSQL, Stripe, Railway, and AI APIs. Ships fast, ships complete.</p></div>
+    <div class="pcard"><h3>📣 Marketer</h3><p>Runs paid acquisition for ECMTuner, understands Google Ads, SEO content strategy, and conversion optimization firsthand.</p></div>
+    <div class="pcard"><h3>💼 Operator</h3><p>Runs a real service business (ECMTuner) with real customers, real invoicing, and real cash flow management. Understands the pain of the product he's building.</p></div>
+    <div class="pcard"><h3>⚡ Executor</h3><p>Multiple live products across mobile and web. Not a designer with mockups — a founder with working software.</p></div>
+  </div>
+  <h2>Hiring Plan (Post-Funding)</h2>
+  <table class="tbl">
+    <thead><tr><th>Role</th><th>Timeline</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Contract Mobile Developer</td><td>Month 2–3</td><td>Accelerate iOS/Android app development</td></tr>
+      <tr><td>Part-time Customer Success</td><td>Month 4–6</td><td>Reduce churn, gather product feedback</td></tr>
+      <tr><td>Content / SEO Specialist</td><td>Month 6–9</td><td>Scale organic content production</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ==================== 13 INVESTMENT ASK ==================== -->
+<div class="pg pb">
+  <div class="snum">Section 13</div>
+  <div class="stit">Investment Ask & Terms</div>
+  <div class="ssub">$150,000 seed round to reach $10,400 MRR by Month 12 and $840K ARR by Month 24.</div>
+  <div class="srul"></div>
+  <div class="sgrid">
+    <div class="sc"><div class="sv" style="color:#3b82f6">$150K</div><div class="sl">Seed Round Size</div></div>
+    <div class="sc"><div class="sv" style="color:#10b981">$840K</div><div class="sl">ARR Target at Month 24</div></div>
+    <div class="sc"><div class="sv" style="color:#3b82f6">18mo</div><div class="sl">Runway at Current Burn</div></div>
+    <div class="sc"><div class="sv" style="color:#10b981">8.4:1</div><div class="sl">LTV:CAC Ratio</div></div>
+  </div>
+  <h2>Proposed Terms</h2>
+  <table class="tbl">
+    <thead><tr><th>Term</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Instrument</td><td>SAFE (Simple Agreement for Future Equity) or Convertible Note</td></tr>
+      <tr><td>Round Size</td><td>$150,000</td></tr>
+      <tr><td>Valuation Cap</td><td>$1,500,000 (10x ARR at Month 24 target = $8.4M implied; cap set conservatively)</td></tr>
+      <tr><td>Discount Rate</td><td>20% on next priced round</td></tr>
+      <tr><td>Minimum Check Size</td><td>$25,000</td></tr>
+      <tr><td>Use of Funds</td><td>Marketing 40%, Engineering 27%, Operations 17%, Runway 17%</td></tr>
+      <tr><td>Target Close</td><td>Q2 2026</td></tr>
+    </tbody>
+  </table>
+  <h2>Return Scenario</h2>
+  <p>At 5,000 paying subscribers ($840K ARR), SlateInvoice would be valued at $4.2M–$8.4M on a 5–10x revenue multiple (standard SaaS). An investor converting a $150K SAFE at a $1.5M cap would own approximately 10% of the company, representing a return of $420K–$840K — a 2.8x–5.6x return. At Series A scale ($5M ARR), the same stake would be worth $3.3M–$6.7M.</p>
+  <div class="hibox" style="margin-top:1.5rem">
+    <div class="hi-ico">💡</div>
+    <div>
+      <strong>Why invest now?</strong><br>
+      The product is built and working. The market is proven. The founder executes. You're not funding an idea — you're funding customer acquisition for a live, revenue-capable product at a pre-traction valuation cap.
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 14 CONTACT ==================== -->
+<div class="pg">
+  <div class="snum">Section 14</div>
+  <div class="stit">Contact & Next Steps</div>
+  <div class="ssub">Ready to discuss further. Let's schedule a call.</div>
+  <div class="srul"></div>
+  <div class="hibox">
+    <div class="hi-ico">📬</div>
+    <div>
+      <strong>Sergey Birioukov</strong><br>
+      Founder & CEO, SlateInvoice<br>
+      <a href="mailto:sergey@ecmtuner.com" style="color:#3b82f6">sergey@ecmtuner.com</a><br>
+      <a href="https://slateinvoice.com" style="color:#3b82f6">slateinvoice.com</a><br>
+      Moonachie, NJ
+    </div>
+  </div>
+  <h2>Suggested Next Steps</h2>
+  <div class="twocol">
+    <div class="pcard"><h3>1. Intro Call (30 min)</h3><p>Walk through the product, market, and financial model. Q&A on assumptions and strategy.</p></div>
+    <div class="pcard"><h3>2. Product Demo</h3><p>Live walkthrough of slateinvoice.com — create an invoice, share the payment link, see it work end-to-end.</p></div>
+    <div class="pcard"><h3>3. Due Diligence</h3><p>Access to Stripe dashboard, Railway metrics, GitHub repo, and financial model spreadsheet provided to serious investors.</p></div>
+    <div class="pcard"><h3>4. Term Sheet & Close</h3><p>SAFE or Convertible Note. Standard Y Combinator SAFE documents. Target close Q2 2026.</p></div>
+  </div>
+  <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid #e2e8f0;font-size:.78rem;color:#94a3b8;text-align:center">
+    <p>This document contains forward-looking statements and financial projections based on management's current expectations. Actual results may differ materially. This is not a public offering of securities.</p>
+    <p style="margin-top:.5rem">SlateInvoice · Moonachie, NJ · slateinvoice.com · March 2026</p>
+    <p style="margin-top:.5rem">CONFIDENTIAL — For Authorized Recipients Only</p>
+  </div>
+</div>
+
+</body>
+</html>
