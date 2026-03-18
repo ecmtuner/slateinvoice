@@ -15,9 +15,20 @@ function CopyPaymentLinkButton({ invoiceId }: { invoiceId: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="px-3 py-1.5 bg-gray-800 hover:bg-indigo-900/40 text-gray-300 hover:text-indigo-300 rounded-lg text-sm border border-gray-700 hover:border-indigo-700 transition-colors"
+      className="px-3 py-1.5 bg-gray-800 hover:bg-indigo-900/40 text-gray-300 hover:text-indigo-300 rounded-lg text-sm border border-gray-700 hover:border-indigo-700 transition-colors print:hidden"
     >
       {copied ? '✓ Copied!' : '🔗 Copy Payment Link'}
+    </button>
+  );
+}
+
+function PrintButton() {
+  return (
+    <button
+      onClick={() => window.print()}
+      className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm border border-gray-700 transition-colors print:hidden"
+    >
+      🖨️ Download PDF
     </button>
   );
 }
@@ -83,7 +94,8 @@ export default function InvoiceDetailPage() {
             </button>
           )}
           <CopyPaymentLinkButton invoiceId={invoice.id} />
-          <button onClick={deleteInvoice} className="px-3 py-1.5 bg-gray-800 hover:bg-red-900/30 text-gray-400 hover:text-red-400 rounded-lg text-sm">
+          <PrintButton />
+          <button onClick={deleteInvoice} className="px-3 py-1.5 bg-gray-800 hover:bg-red-900/30 text-gray-400 hover:text-red-400 rounded-lg text-sm print:hidden">
             Delete
           </button>
         </div>
@@ -162,7 +174,29 @@ export default function InvoiceDetailPage() {
             {invoice.terms && <div><p className="text-xs text-gray-500 uppercase mb-1">Terms</p><p className="text-sm text-gray-400">{invoice.terms}</p></div>}
           </div>
         )}
+
+        {/* Payment link — shows on printed PDF */}
+        <div className="hidden print:block border-t border-gray-200 pt-6 mt-4 text-center">
+          <p className="text-sm text-gray-500 mb-1">Pay online securely at:</p>
+          <p className="text-blue-600 font-medium text-sm break-all">
+            {typeof window !== 'undefined' ? `${window.location.origin}/pay/${invoice.id}` : `slateinvoice.com/pay/${invoice.id}`}
+          </p>
+          <p className="text-xs text-gray-400 mt-1">Powered by SlateInvoice · Secure payments via Stripe</p>
+        </div>
       </div>
+
+      {/* Print styles */}
+      <style jsx global>{`
+        @media print {
+          body { background: white !important; color: black !important; }
+          .bg-gray-950 { background: white !important; }
+          .bg-gray-900 { background: white !important; border: 1px solid #e5e7eb !important; }
+          .text-white { color: #111 !important; }
+          .text-gray-400, .text-gray-500 { color: #6b7280 !important; }
+          .border-gray-800, .border-gray-700 { border-color: #e5e7eb !important; }
+          .divide-gray-800 > * { border-color: #e5e7eb !important; }
+        }
+      `}</style>
     </div>
   );
 }
