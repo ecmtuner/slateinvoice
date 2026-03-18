@@ -256,7 +256,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-gray-800 py-8 text-center text-sm text-gray-600">
-        <p>SlateInvoice · Simple invoicing for everyone · <Link href="/login" className="hover:text-gray-400">Sign in</Link></p>
+        <p>SlateInvoice · Simple invoicing for everyone · <Link href="/login" className="hover:text-gray-400">Sign in</Link> · <Link href="/blog" className="hover:text-gray-400">Blog</Link></p>
       </footer>
     </main>
   );
