@@ -8,7 +8,7 @@ const features = [
   { icon: '📦', title: 'Products Library', desc: 'Save your services and products. Select from dropdown when invoicing.' },
   { icon: '🧮', title: 'Taxes & Discounts', desc: 'Apply tax rates, discounts, and fees as % or flat rate. Auto-calculated.' },
   { icon: '📄', title: 'PDF Export', desc: 'Download professional PDF invoices to send or print.' },
-  { icon: '🔗', title: 'Payment Links', desc: 'Send a payment link with your invoice. Stripe, PayPal, Venmo, CashApp.' },
+  { icon: '🔗', title: 'Pay Invoice Online', desc: 'Every invoice gets a secure payment link. Share it — clients pay by card instantly, no login needed.' },
   { icon: '💱', title: 'Multi-Currency', desc: 'Invoice in USD, EUR, GBP, CAD, AUD and more.' },
   { icon: '🔁', title: 'Recurring Invoices', desc: 'Automatic recurring billing for retainer clients.' },
   { icon: '🌙', title: 'Dark Mode', desc: 'Easy on the eyes. Always dark, always clean.' },
@@ -148,6 +148,48 @@ export default function LandingPage() {
         <div className="bg-blue-600/10 border border-blue-500/30 rounded-2xl p-6 text-center">
           <p className="text-blue-300 font-semibold text-lg mb-2">💸 Why pay more?</p>
           <p className="text-gray-400 text-sm">Competitors charge $20–$30/month for the same features. SlateInvoice starts at <strong className="text-white">$7/mo</strong> for Starter and <strong className="text-white">$15/mo</strong> for unlimited — saving you up to $180/year.</p>
+        </div>
+      </section>
+
+      {/* Payment Link Highlight */}
+      <section className="max-w-5xl mx-auto px-4 pb-16">
+        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 sm:p-12 grid sm:grid-cols-2 gap-8 items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full text-green-400 text-xs mb-4">
+              ✨ New Feature
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+              Get paid with one link
+            </h2>
+            <p className="text-gray-400 mb-6 leading-relaxed">
+              Every invoice gets a secure payment page. Share the link via email, text, or WhatsApp — your client clicks, pays by card, and the invoice marks itself as paid. No chasing, no follow-ups.
+            </p>
+            <ul className="space-y-2 text-sm text-gray-300 mb-8">
+              <li className="flex items-center gap-2"><span className="text-green-400">✓</span> No login required for your client</li>
+              <li className="flex items-center gap-2"><span className="text-green-400">✓</span> Secure Stripe payment processing</li>
+              <li className="flex items-center gap-2"><span className="text-green-400">✓</span> Invoice auto-marks as paid instantly</li>
+              <li className="flex items-center gap-2"><span className="text-green-400">✓</span> Payment link printed on PDF invoices</li>
+            </ul>
+            <Link href="/signup" className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-colors">
+              Try it free →
+            </Link>
+          </div>
+          <div className="bg-gray-950 border border-gray-800 rounded-xl p-6 text-sm font-mono">
+            <div className="text-gray-500 mb-3 text-xs uppercase tracking-wide">Payment Page</div>
+            <div className="text-white font-semibold text-base mb-1">Invoice #INV-2025-047</div>
+            <div className="text-gray-400 mb-4">From: Your Business Name</div>
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between text-gray-400"><span>Web Design — 10hrs</span><span>$950</span></div>
+              <div className="flex justify-between text-gray-400"><span>Logo Design</span><span>$350</span></div>
+            </div>
+            <div className="border-t border-gray-800 pt-3 flex justify-between text-white font-bold text-base mb-4">
+              <span>Total Due</span><span>$1,300.00</span>
+            </div>
+            <div className="w-full py-3 bg-blue-600 rounded-lg text-white text-center font-bold text-sm">
+              💳 Pay $1,300.00 Now
+            </div>
+            <div className="text-gray-600 text-xs text-center mt-2">Secured by Stripe · Visa · Mastercard · Amex</div>
+          </div>
         </div>
       </section>
 
