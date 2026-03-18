@@ -21,15 +21,25 @@ export const authOptions: NextAuthOptions = {
         if (!user) return null;
         const valid = await bcrypt.compare(credentials.password, user.password);
         if (!valid) return null;
+        if (user.twoFactorEnabled) {
+          return { id: user.id, email: user.email, name: user.name, plan: user.plan, twoFactorPending: true } as any;
+        }
         return { id: user.id, email: user.email, name: user.name, plan: user.plan };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.plan = (user as any).plan;
+        if ((user as any).twoFactorPending) {
+          token.twoFactorPending = true;
+        }
+      }
+      // Allow clearing twoFactorPending via session update
+      if (trigger === 'update' && (session as any)?.twoFactorVerified) {
+        token.twoFactorPending = false;
       }
       return token;
     },
@@ -38,6 +48,7 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).id = token.id;
         (session.user as any).plan = token.plan;
       }
+      (session as any).twoFactorPending = token.twoFactorPending as boolean | undefined;
       return session;
     },
   },

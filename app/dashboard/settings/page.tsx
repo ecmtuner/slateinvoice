@@ -107,6 +107,20 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {/* Security section */}
+      <div className="mb-8">
+        <Link
+          href="/dashboard/settings/security"
+          className="flex items-center justify-between p-5 bg-gray-900 border border-gray-800 hover:border-gray-700 rounded-xl transition-colors group"
+        >
+          <div>
+            <h2 className="font-semibold text-white group-hover:text-indigo-300 transition-colors">🛡️ Security</h2>
+            <p className="text-sm text-gray-500 mt-0.5">Two-factor authentication and account security</p>
+          </div>
+          <span className="text-gray-600 group-hover:text-gray-400 transition-colors">→</span>
+        </Link>
+      </div>
+
       {/* Business profile */}
       <form onSubmit={handleSave} className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
         <h2 className="font-semibold text-white mb-2">Business Profile</h2>

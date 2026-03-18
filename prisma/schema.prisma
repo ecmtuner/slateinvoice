@@ -17,6 +17,8 @@ model User {
   stripeSubscriptionId   String?
   stripePriceId          String?
   stripeCurrentPeriodEnd DateTime?
+  twoFactorSecret        String?
+  twoFactorEnabled       Boolean   @default(false)
   invoiceCount           Int       @default(0)
   invoiceResetAt         DateTime  @default(now())
   createdAt              DateTime  @default(now())
