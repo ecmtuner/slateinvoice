@@ -5,11 +5,10 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" as any });
-
 const APP_URL = process.env.NEXTAUTH_URL || "https://slateinvoice-production.up.railway.app";
 
 export async function POST(req: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" as any });
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
