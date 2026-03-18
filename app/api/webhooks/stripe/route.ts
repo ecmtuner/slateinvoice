@@ -25,6 +25,33 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+
+        // Handle public invoice payment
+        const invoiceId = session.metadata?.invoiceId;
+        if (invoiceId) {
+          const inv = await prisma.invoice.findUnique({ where: { id: invoiceId } });
+          if (inv && inv.status !== "paid") {
+            await prisma.invoice.update({
+              where: { id: invoiceId },
+              data: {
+                status: "paid",
+                paidAt: new Date(),
+                stripePaymentId: session.payment_intent as string | null,
+              },
+            });
+
+            // Update client totalEarned if linked
+            if (inv.clientId) {
+              await prisma.client.update({
+                where: { id: inv.clientId },
+                data: { totalEarned: { increment: inv.total } },
+              });
+            }
+          }
+          break;
+        }
+
+        // Handle subscription checkout
         const userId = session.metadata?.userId;
         const plan = session.metadata?.plan;
         if (!userId || !plan) break;

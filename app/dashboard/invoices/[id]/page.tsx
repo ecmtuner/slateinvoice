@@ -3,6 +3,25 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+function CopyPaymentLinkButton({ invoiceId }: { invoiceId: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    const link = `${window.location.origin}/pay/${invoiceId}`;
+    navigator.clipboard.writeText(link).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      className="px-3 py-1.5 bg-gray-800 hover:bg-indigo-900/40 text-gray-300 hover:text-indigo-300 rounded-lg text-sm border border-gray-700 hover:border-indigo-700 transition-colors"
+    >
+      {copied ? '✓ Copied!' : '🔗 Copy Payment Link'}
+    </button>
+  );
+}
+
 interface InvoiceItem { description: string; qty: number; unitPrice: number; amount: number; }
 interface Invoice {
   id: string; number: string; type: string; status: string; currency: string;
@@ -63,6 +82,7 @@ export default function InvoiceDetailPage() {
               Send
             </button>
           )}
+          <CopyPaymentLinkButton invoiceId={invoice.id} />
           <button onClick={deleteInvoice} className="px-3 py-1.5 bg-gray-800 hover:bg-red-900/30 text-gray-400 hover:text-red-400 rounded-lg text-sm">
             Delete
           </button>

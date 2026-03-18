@@ -91,11 +91,14 @@ model Invoice {
   total          Float         @default(0)
   notes          String        @default("")
   terms          String        @default("")
-  issueDate      String
-  dueDate        String        @default("")
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  items          InvoiceItem[]
+  issueDate       String
+  dueDate         String        @default("")
+  paymentLink     String?
+  paidAt          DateTime?
+  stripePaymentId String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  items           InvoiceItem[]
 }
 
 model InvoiceItem {
