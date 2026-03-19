@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import * as otplib from 'otplib';
+import { authenticator } from 'otplib';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -23,8 +23,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: '2FA not configured' }, { status: 400 });
   }
 
-  const result = await otplib.verify({ token, secret: user.twoFactorSecret });
-  const isValid = !!(result as any)?.valid;
+  const isValid = authenticator.verify({ token, secret: user.twoFactorSecret });
   if (!isValid) {
     return NextResponse.json({ success: false });
   }

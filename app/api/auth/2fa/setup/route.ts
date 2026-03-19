@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import * as otplib from 'otplib';
+import { authenticator } from 'otplib';
 import QRCode from 'qrcode';
 
 export async function GET() {
@@ -17,14 +17,14 @@ export async function GET() {
     return NextResponse.json({ error: 'User not found' }, { status: 404 });
   }
 
-  const secret = otplib.generateSecret();
-  // Save secret but don't enable 2FA yet
+  const secret = authenticator.generateSecret();
+
   await prisma.user.update({
     where: { id: userId },
     data: { twoFactorSecret: secret },
   });
 
-  const otpauthUrl = otplib.generateURI({ label: user.email, issuer: 'SlateInvoice', secret });
+  const otpauthUrl = authenticator.keyuri(user.email, 'SlateInvoice', secret);
   const qrCodeDataUrl = await QRCode.toDataURL(otpauthUrl);
 
   return NextResponse.json({ secret, otpauthUrl, qrCodeDataUrl });
