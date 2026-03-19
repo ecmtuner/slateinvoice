@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 const PLAN_PRICES: Record<string, number> = {
   starter: 7,
   freelancer: 15,

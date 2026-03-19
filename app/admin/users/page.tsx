@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 const PLAN_BADGE: Record<string, string> = {
   free: 'bg-gray-700 text-gray-300',
   starter: 'bg-blue-900/60 text-blue-300',
