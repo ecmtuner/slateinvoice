@@ -6,6 +6,10 @@ export default withAuth(
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
 
+    if (path.startsWith('/admin') && token?.email !== 'sergeybirioukov@gmail.com') {
+      return NextResponse.redirect(new URL('/login', req.url));
+    }
+
     if (
       token?.twoFactorPending &&
       !path.startsWith('/auth/2fa') &&
@@ -23,5 +27,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard/:path*', '/admin/:path*'],
 };
