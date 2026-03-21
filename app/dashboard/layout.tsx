@@ -1,9 +1,8 @@
 'use client';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { useRef } from 'react';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: '📊' },
@@ -83,6 +82,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {planLabel}
             </span>
           </div>
+        </div>
         <nav className="flex-1 p-3 space-y-1">
           {navItems.map(item => (
             <Link key={item.href} href={item.href}
