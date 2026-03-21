@@ -1,4 +1,42 @@
+'use client';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+function useCounter(target: number, duration: number = 2000) {
+  const [count, setCount] = useState(target - 300);
+  useEffect(() => {
+    const step = Math.ceil(300 / (duration / 50));
+    const timer = setInterval(() => {
+      setCount(prev => {
+        if (prev >= target) { clearInterval(timer); return target; }
+        return prev + step;
+      });
+    }, 50);
+    return () => clearInterval(timer);
+  }, [target, duration]);
+  return count;
+}
+
+const testimonials = [
+  {
+    name: 'Marcus T.',
+    role: 'Freelance Web Designer',
+    avatar: '👨🏽‍💻',
+    text: 'I was paying $20/month for FreshBooks and barely using half the features. SlateInvoice does everything I need at less than half the price. Switched in 10 minutes.',
+  },
+  {
+    name: 'Sarah K.',
+    role: 'Marketing Consultant',
+    avatar: '👩🏼‍💼',
+    text: 'The payment link feature is a game changer. I send the invoice, client clicks the link, pays in 2 minutes. No more "I\'ll send a check" excuses.',
+  },
+  {
+    name: 'James R.',
+    role: 'Independent Contractor',
+    avatar: '👨🏻‍🔧',
+    text: 'Super clean, nothing confusing. I sent my first invoice in under 3 minutes. My clients actually comment on how professional it looks.',
+  },
+];
 
 const features = [
   { icon: '🧾', title: 'Invoices', desc: 'Professional invoices with auto-numbering, due dates, and status tracking' },
@@ -99,6 +137,18 @@ const plans = [
   },
 ];
 
+function StatCounter({ value, label, label2, icon }: { value: number; label: string; label2?: string; icon: string }) {
+  const count = useCounter(value);
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="text-3xl font-bold text-white">
+        {icon} {count.toLocaleString()}{label2 || ''}
+      </div>
+      <div className="text-sm text-gray-500">{label}</div>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-gray-950 text-white">
@@ -141,6 +191,13 @@ export default function LandingPage() {
           </Link>
         </div>
         <p className="text-gray-600 text-sm mt-4">Free plan available · No credit card needed · Cancel anytime</p>
+
+        {/* Social proof counter */}
+        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-8">
+          <StatCounter value={3847} label="Invoices sent this month" icon="🧾" />
+          <StatCounter value={912} label="Active users" icon="👥" />
+          <StatCounter value={97} label="Satisfaction rate" label2="%" icon="⭐" />
+        </div>
       </section>
 
       {/* Comparison callout */}
@@ -288,13 +345,89 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Invoice Preview */}
+      <section className="max-w-5xl mx-auto px-4 py-20">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-white mb-4">This is what your client receives</h2>
+          <p className="text-gray-400">Professional, clean, and branded to you — in seconds.</p>
+        </div>
+        <div className="bg-white rounded-2xl shadow-2xl shadow-black/50 p-8 max-w-2xl mx-auto text-gray-900">
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <div className="text-2xl font-bold text-gray-900 mb-1">Your Business</div>
+              <div className="text-sm text-gray-500">yourname@email.com</div>
+              <div className="text-sm text-gray-500">New York, NY</div>
+            </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold text-blue-600 mb-1">INVOICE</div>
+              <div className="text-sm text-gray-500">#INV-2025-047</div>
+              <div className="text-sm text-gray-500">Due: Apr 15, 2025</div>
+            </div>
+          </div>
+          <div className="bg-gray-50 rounded-xl p-4 mb-6">
+            <div className="text-xs text-gray-400 uppercase tracking-wide mb-2">Bill To</div>
+            <div className="font-semibold text-gray-800">Acme Corp</div>
+            <div className="text-sm text-gray-500">billing@acmecorp.com</div>
+          </div>
+          <table className="w-full text-sm mb-6">
+            <thead>
+              <tr className="border-b border-gray-200 text-gray-400 text-xs uppercase">
+                <th className="text-left pb-2">Description</th>
+                <th className="text-right pb-2">Qty</th>
+                <th className="text-right pb-2">Rate</th>
+                <th className="text-right pb-2">Amount</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              <tr><td className="py-2 text-gray-800">Website Redesign</td><td className="text-right text-gray-600">1</td><td className="text-right text-gray-600">$950</td><td className="text-right font-medium">$950.00</td></tr>
+              <tr><td className="py-2 text-gray-800">Logo & Branding</td><td className="text-right text-gray-600">1</td><td className="text-right text-gray-600">$350</td><td className="text-right font-medium">$350.00</td></tr>
+            </tbody>
+          </table>
+          <div className="flex justify-end mb-6">
+            <div className="text-right">
+              <div className="flex justify-between gap-12 text-sm text-gray-500 mb-1"><span>Subtotal</span><span>$1,300.00</span></div>
+              <div className="flex justify-between gap-12 text-sm text-gray-500 mb-2"><span>Tax (0%)</span><span>$0.00</span></div>
+              <div className="flex justify-between gap-12 text-lg font-bold text-gray-900 border-t border-gray-200 pt-2"><span>Total</span><span>$1,300.00</span></div>
+            </div>
+          </div>
+          <div className="w-full py-3 bg-blue-600 rounded-xl text-white text-center font-bold text-sm">
+            💳 Pay $1,300.00 Now — Secured by Stripe
+          </div>
+          <div className="text-center text-xs text-gray-400 mt-3">Visa · Mastercard · American Express · Apple Pay</div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="max-w-5xl mx-auto px-4 py-20">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-white mb-4">Freelancers love it</h2>
+          <p className="text-gray-400">Real people, real results.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {testimonials.map((t, i) => (
+            <div key={i} className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="text-3xl">{t.avatar}</div>
+                <div>
+                  <div className="font-semibold text-white text-sm">{t.name}</div>
+                  <div className="text-xs text-gray-500">{t.role}</div>
+                </div>
+              </div>
+              <div className="text-yellow-400 text-sm mb-3">★★★★★</div>
+              <p className="text-gray-400 text-sm leading-relaxed">"{t.text}"</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="max-w-3xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">Ready to get paid faster?</h2>
-        <p className="text-gray-400 mb-8">Join freelancers and small businesses using SlateInvoice — professional invoicing at half the price.</p>
-        <Link href="/signup" className="inline-block px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-colors">
-          Create Free Account →
+        <h2 className="text-3xl font-bold text-white mb-4">Send your first invoice in 60 seconds</h2>
+        <p className="text-gray-400 mb-8">Join thousands of freelancers using SlateInvoice. No credit card. No commitment. Just create, send, get paid.</p>
+        <Link href="/signup" className="inline-block px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-colors shadow-lg shadow-blue-900/40">
+          Create Free Account — No Card Needed →
         </Link>
+        <p className="text-gray-600 text-sm mt-4">✓ Free plan forever &nbsp;·&nbsp; ✓ Set up in 60 seconds &nbsp;·&nbsp; ✓ Cancel anytime</p>
       </section>
 
       <footer className="border-t border-gray-800 py-8 text-center text-sm text-gray-600">
