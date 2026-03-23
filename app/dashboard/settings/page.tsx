@@ -5,9 +5,10 @@ import Link from 'next/link';
 
 export default function SettingsPage() {
   const { data: session } = useSession();
-  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', currency: 'USD', terms: '', notes: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', currency: 'USD', terms: '', notes: '', logo: '' });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
   const [plan, setPlan] = useState<string>('free');
   const [periodEnd, setPeriodEnd] = useState<string | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
@@ -16,7 +17,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     fetch('/api/business').then(r => r.json()).then(d => {
-      if (d?.userId) setForm({ name: d.name||'', email: d.email||'', phone: d.phone||'', address: d.address||'', currency: d.currency||'USD', terms: d.terms||'', notes: d.notes||'' });
+      if (d?.userId) setForm({ name: d.name||'', email: d.email||'', phone: d.phone||'', address: d.address||'', currency: d.currency||'USD', terms: d.terms||'', notes: d.notes||'', logo: d.logo||'' });
     });
     // Fetch latest plan from DB
     fetch('/api/user/plan').then(r => r.json()).then(d => {
@@ -24,6 +25,19 @@ export default function SettingsPage() {
       if (d.stripeCurrentPeriodEnd) setPeriodEnd(d.stripeCurrentPeriodEnd);
     }).catch(() => setPlan(sessionPlan));
   }, [sessionPlan]);
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { alert('Logo must be under 2MB'); return; }
+    setLogoUploading(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setForm(f => ({ ...f, logo: reader.result as string }));
+      setLogoUploading(false);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true); setSaved(false);
@@ -124,6 +138,47 @@ export default function SettingsPage() {
       {/* Business profile */}
       <form onSubmit={handleSave} className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
         <h2 className="font-semibold text-white mb-2">Business Profile</h2>
+
+        {/* Logo Upload */}
+        <div>
+          <label className="text-xs text-gray-500 mb-1 block">
+            Business Logo
+            {!isPaid && <span className="ml-2 text-yellow-500 text-xs">⚡ Starter+ only</span>}
+          </label>
+          {!isPaid ? (
+            <div className="flex items-center gap-4 p-4 bg-gray-800 border border-dashed border-gray-600 rounded-xl">
+              <div className="w-16 h-16 rounded-lg bg-gray-700 border border-gray-600 flex items-center justify-center text-gray-500 text-xs text-center leading-tight">
+                🖼️<br/>Logo
+              </div>
+              <div>
+                <p className="text-sm text-gray-400 mb-2">Upload your logo to brand your invoices</p>
+                <Link href="/#pricing" className="text-xs px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors">
+                  Upgrade to add logo →
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+                {form.logo ? (
+                  <img src={form.logo} alt="Logo" className="w-full h-full object-contain" />
+                ) : (
+                  <span className="text-gray-500 text-xs text-center">No logo</span>
+                )}
+              </div>
+              <div className="flex-1">
+                <label className="cursor-pointer inline-block px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-xl font-medium transition-colors">
+                  {logoUploading ? 'Uploading...' : form.logo ? 'Change Logo' : 'Upload Logo'}
+                  <input type="file" accept="image/png,image/jpeg,image/jpg,image/svg+xml" onChange={handleLogoUpload} className="hidden" />
+                </label>
+                {form.logo && (
+                  <button type="button" onClick={() => setForm(f => ({...f, logo: ''}))} className="ml-2 text-xs text-red-400 hover:text-red-300">Remove</button>
+                )}
+                <p className="text-xs text-gray-500 mt-1">PNG, JPG or SVG · Max 2MB · Square works best</p>
+              </div>
+            </div>
+          )}
+        </div>
         {[
           { k: 'name', label: 'Business Name', placeholder: 'Acme Inc.' },
           { k: 'email', label: 'Business Email', placeholder: 'hello@acme.com' },

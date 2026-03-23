@@ -9,8 +9,13 @@ interface Props {
 export default async function PublicPayPage({ params }: Props) {
   const invoice = await prisma.invoice.findUnique({
     where: { id: params.invoiceId },
-    include: { items: true },
+    include: { items: true, user: { include: { business: true } } },
   });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const business = (invoice as any)?.user?.business;
+  const userPlan = (invoice as any)?.user?.plan ?? 'free';
+  const isPaidPlan = userPlan !== 'free';
+  const logoUrl = isPaidPlan ? (business?.logo || null) : null;
 
   if (!invoice) {
     return (
@@ -62,8 +67,15 @@ export default async function PublicPayPage({ params }: Props) {
       <header className={`${headerClass} py-4`}>
         <div className="max-w-3xl mx-auto px-4 flex items-center gap-2">
           <span className="text-2xl">🧾</span>
-          <span className={`text-xl font-bold ${logoTextClass}`}>SlateInvoice</span>
+          {logoUrl ? (
+            <img src={logoUrl} alt="Business Logo" className="h-10 w-auto max-w-[160px] object-contain" />
+          ) : (
+            <span className={`text-xl font-bold ${logoTextClass}`}>{invoice.fromName || 'SlateInvoice'}</span>
+          )}
         </div>
+        {!isPaidPlan && (
+          <span className="text-xs text-white/60">Powered by SlateInvoice</span>
+        )}
       </header>
 
       <div className="max-w-3xl mx-auto px-4 py-10">
