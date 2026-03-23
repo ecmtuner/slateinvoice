@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import TemplateSelector from '@/components/TemplateSelector';
 
 interface Client { id: string; name: string; company: string; email: string; phone: string; address: string; }
 interface Product { id: string; name: string; price: number; unit: string; }
@@ -48,6 +49,7 @@ function NewInvoiceInner() {
     terms: '',
     status: 'draft',
     type,
+    template: 'classic',
   });
 
   const [items, setItems] = useState<LineItem[]>([
@@ -122,6 +124,9 @@ function NewInvoiceInner() {
       {error && <div className="mb-4 p-3 bg-red-900/30 border border-red-700 rounded-xl text-red-300 text-sm">{error}</div>}
 
       <div className="space-y-6">
+        {/* Template Selector */}
+        <TemplateSelector value={form.template} onChange={t => setForm(f => ({ ...f, template: t }))} />
+
         {/* From / To */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">

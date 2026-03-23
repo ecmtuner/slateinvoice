@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sendInvoiceToClient } from "@/lib/email";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -78,6 +79,17 @@ export async function POST(req: NextRequest) {
       where: { id: invoice.clientId },
       data: { totalEarned: { increment: invoice.total } },
     });
+  }
+
+  // Send email notification to client if toEmail exists and invoice is sent
+  if (invoice.toEmail && invoice.status === "sent") {
+    try {
+      const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency: invoice.currency || "USD" }).format(invoice.total);
+      const paymentLink = invoice.paymentLink || `${process.env.NEXTAUTH_URL || ""}/pay/${invoice.id}`;
+      await sendInvoiceToClient(invoice.toEmail, invoice.fromName || "SlateInvoice", invoice.number, fmt, paymentLink);
+    } catch (emailErr) {
+      console.error("Failed to send invoice email:", emailErr);
+    }
   }
 
   return NextResponse.json(invoice);

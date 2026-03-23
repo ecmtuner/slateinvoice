@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
+import { sendInvoicePaidEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" as any });
@@ -46,6 +47,17 @@ export async function POST(req: NextRequest) {
                 where: { id: inv.clientId },
                 data: { totalEarned: { increment: inv.total } },
               });
+            }
+
+            // Send payment confirmation email to invoice owner
+            try {
+              const owner = await prisma.user.findUnique({ where: { id: inv.userId } });
+              if (owner?.email) {
+                const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency: inv.currency || "USD" }).format(inv.total);
+                await sendInvoicePaidEmail(owner.email, inv.number, fmt, inv.toName || "Client");
+              }
+            } catch (emailErr) {
+              console.error("Failed to send paid email:", emailErr);
             }
           }
           break;

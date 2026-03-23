@@ -10,7 +10,8 @@ datasource db {
 model User {
   id                     String    @id @default(cuid())
   email                  String    @unique
-  password               String
+  password               String?
+  googleId               String?   @unique
   name                   String?
   plan                   String?   @default("free")
   stripeCustomerId       String?
@@ -98,6 +99,8 @@ model Invoice {
   paymentLink     String?
   paidAt          DateTime?
   stripePaymentId String?
+  reminderSentAt  DateTime?
+  template        String        @default("classic")
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   items           InvoiceItem[]

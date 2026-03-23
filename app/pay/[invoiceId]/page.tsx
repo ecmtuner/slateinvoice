@@ -46,13 +46,23 @@ export default async function PublicPayPage({ params }: Props) {
   const fmt = (n: number) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: invoice.currency || "USD" }).format(n);
 
+  const template = (invoice as any).template || 'classic';
+  const headerClass =
+    template === 'modern'
+      ? 'bg-gray-900'
+      : template === 'minimal'
+      ? 'bg-white border-b border-gray-200'
+      : 'bg-blue-600'; // classic default
+  const logoTextClass =
+    template === 'minimal' ? 'text-gray-800' : 'text-white';
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 py-4">
+      <header className={`${headerClass} py-4`}>
         <div className="max-w-3xl mx-auto px-4 flex items-center gap-2">
           <span className="text-2xl">🧾</span>
-          <span className="text-xl font-bold text-gray-800">SlateInvoice</span>
+          <span className={`text-xl font-bold ${logoTextClass}`}>SlateInvoice</span>
         </div>
       </header>
 
