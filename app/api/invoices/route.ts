@@ -89,19 +89,14 @@ export async function POST(req: NextRequest) {
   }
 
   // Send email notification to client if toEmail exists and invoice is sent
-  console.log(`[invoice] status=${invoice.status} toEmail=${invoice.toEmail} id=${invoice.id}`)
   if (invoice.toEmail && invoice.status === "sent") {
     try {
       const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency: invoice.currency || "USD" }).format(invoice.total);
       const paymentLink = invoice.paymentLink || `${process.env.NEXTAUTH_URL || ""}/pay/${invoice.id}`;
-      console.log(`[invoice] sending email to ${invoice.toEmail}`)
       await sendInvoiceToClient(invoice.toEmail, invoice.fromName || "SlateInvoice", invoice.number, fmt, paymentLink);
-      console.log(`[invoice] email sent ok`)
     } catch (emailErr) {
       console.error("Failed to send invoice email:", emailErr);
     }
-  } else {
-    console.log(`[invoice] skipping email — toEmail=${invoice.toEmail} status=${invoice.status}`)
   }
 
   return NextResponse.json(invoice);
