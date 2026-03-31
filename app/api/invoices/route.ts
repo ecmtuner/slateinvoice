@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  try {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = (session.user as any).id;
@@ -64,6 +65,12 @@ export async function POST(req: NextRequest) {
     invoiceData.number = `INV-${String(count + 1).padStart(4, "0")}`;
   }
 
+  // Validate clientId exists before linking — avoids FK constraint crash
+  if (invoiceData.clientId) {
+    const clientExists = await prisma.client.findFirst({ where: { id: invoiceData.clientId, userId } })
+    if (!clientExists) invoiceData.clientId = null
+  }
+
   const invoice = await prisma.invoice.create({
     data: {
       ...invoiceData,
@@ -93,4 +100,8 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json(invoice);
+  } catch (err: any) {
+    console.error("POST /api/invoices error:", err.message)
+    return NextResponse.json({ error: err.message || "Failed to create invoice" }, { status: 500 })
+  }
 }
