@@ -91,18 +91,27 @@ function NewInvoiceInner() {
 
   const handleSave = async (status: string) => {
     setSaving(true); setError('');
-    const res = await fetch('/api/invoices', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...form, status,
-        subtotal, taxAmount, discountAmount: discountAmount, total,
-        items: items.filter(i => i.description.trim()),
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.error || 'Failed to save'); setSaving(false); return; }
-    router.push(`/dashboard/invoices/${data.id}`);
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      const res = await fetch('/api/invoices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form, status,
+          subtotal, taxAmount, discountAmount: discountAmount, total,
+          items: items.filter(i => i.description.trim()),
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || 'Failed to save'); setSaving(false); return; }
+      router.push(`/dashboard/invoices/${data.id}`);
+    } catch (err: any) {
+      setError(err.name === 'AbortError' ? 'Request timed out — please try again' : 'Something went wrong. Please try again.');
+      setSaving(false);
+    }
   };
 
   const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
