@@ -98,7 +98,9 @@ function NewInvoiceInner() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...form, status,
+          ...form,
+          clientId: form.clientId || null,
+          status,
           subtotal, taxAmount, discountAmount: discountAmount, total,
           items: items.filter(i => i.description.trim()),
         }),
