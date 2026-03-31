@@ -71,6 +71,25 @@ export async function POST(req: NextRequest) {
     if (!clientExists) invoiceData.clientId = null
   }
 
+  // Auto-create client from invoice toName/toEmail if no clientId
+  if (!invoiceData.clientId && invoiceData.toName && invoiceData.toEmail) {
+    const existing = await prisma.client.findFirst({ where: { userId, email: invoiceData.toEmail } })
+    if (existing) {
+      invoiceData.clientId = existing.id
+    } else {
+      const newClient = await prisma.client.create({
+        data: {
+          userId,
+          name: invoiceData.toName,
+          email: invoiceData.toEmail,
+          phone: invoiceData.toPhone || null,
+          address: invoiceData.toAddress || null,
+        }
+      })
+      invoiceData.clientId = newClient.id
+    }
+  }
+
   const invoice = await prisma.invoice.create({
     data: {
       ...invoiceData,
