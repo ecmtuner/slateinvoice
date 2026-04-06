@@ -1,29 +1,47 @@
-// STRIPE_CLIENT_ID must be set in Railway (Stripe Connect platform client ID, e.g. ca_xxxx)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import Stripe from "stripe";
+import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
+import Stripe from "stripe"
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const session = await getServerSession(authOptions)
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const userId = (session.user as any).id
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" as any })
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
+
+  // Get existing user to check if they already have a stripe account
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+
+  let accountId = user?.stripeAccountId
+
+  // Create a new Express account if they don't have one
+  if (!accountId) {
+    const account = await stripe.accounts.create({
+      type: "express",
+      email: (session.user as any).email || undefined,
+      capabilities: {
+        card_payments: { requested: true },
+        transfers: { requested: true },
+      },
+    })
+    accountId = account.id
+    // Save to user
+    await prisma.user.update({
+      where: { id: userId },
+      data: { stripeAccountId: accountId, stripeAccountStatus: "pending" },
+    })
   }
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2024-06-20" as any,
-  });
+  // Create account link for onboarding
+  const accountLink = await stripe.accountLinks.create({
+    account: accountId,
+    refresh_url: `${baseUrl}/api/stripe/connect/refresh?accountId=${accountId}`,
+    return_url: `${baseUrl}/dashboard/settings?stripe=connected`,
+    type: "account_onboarding",
+  })
 
-  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-  const redirectUri = `${baseUrl}/api/stripe/connect/callback`;
-
-  const authorizeUrl = stripe.oauth.authorizeUrl({
-    response_type: "code",
-    client_id: process.env.STRIPE_CLIENT_ID!,
-    scope: "read_write",
-    redirect_uri: redirectUri,
-  });
-
-  return NextResponse.redirect(authorizeUrl);
+  return NextResponse.redirect(accountLink.url)
 }
