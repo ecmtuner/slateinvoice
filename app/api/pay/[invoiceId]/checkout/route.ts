@@ -15,7 +15,7 @@ export async function POST(
 
   const invoice = await prisma.invoice.findUnique({
     where: { id: invoiceId },
-    include: { items: true },
+    include: { items: true, user: true },
   });
 
   if (!invoice) {
@@ -26,7 +26,19 @@ export async function POST(
     return NextResponse.json({ error: "This invoice has already been paid" }, { status: 400 });
   }
 
+  // Require the invoice owner to have a connected Stripe account
+  const user = invoice.user;
+  if (!user?.stripeAccountId) {
+    return NextResponse.json(
+      { error: "Payment not available — seller has not connected their Stripe account" },
+      { status: 402 }
+    );
+  }
+
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+  // 1% application fee for SlateInvoice
+  const applicationFeeAmount = Math.round(invoice.total * 100 * 0.01);
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -47,6 +59,12 @@ export async function POST(
     cancel_url: `${baseUrl}/pay/${invoiceId}`,
     metadata: { invoiceId },
     ...(invoice.toEmail ? { customer_email: invoice.toEmail } : {}),
+    payment_intent_data: {
+      application_fee_amount: applicationFeeAmount,
+      transfer_data: {
+        destination: user.stripeAccountId,
+      },
+    },
   });
 
   return NextResponse.json({ url: session.url });

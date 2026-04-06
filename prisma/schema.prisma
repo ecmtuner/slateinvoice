@@ -18,6 +18,8 @@ model User {
   stripeSubscriptionId   String?
   stripePriceId          String?
   stripeCurrentPeriodEnd DateTime?
+  stripeAccountId        String?
+  stripeAccountStatus    String?   @default("not_connected")
   twoFactorSecret        String?
   twoFactorEnabled       Boolean   @default(false)
   invoiceCount           Int       @default(0)

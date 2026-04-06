@@ -2,9 +2,12 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function SettingsPage() {
   const { data: session } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', currency: 'USD', terms: '', notes: '', logo: '' });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -12,6 +15,12 @@ export default function SettingsPage() {
   const [plan, setPlan] = useState<string>('free');
   const [periodEnd, setPeriodEnd] = useState<string | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
+  // Stripe Connect state
+  const [stripeAccountId, setStripeAccountId] = useState<string | null>(null);
+  const [stripeStatus, setStripeStatus] = useState<string>('not_connected');
+  const [stripeConnecting, setStripeConnecting] = useState(false);
+  const [stripeDisconnecting, setStripeDisconnecting] = useState(false);
+  const [stripeMessage, setStripeMessage] = useState<string | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sessionPlan = (session?.user as any)?.plan ?? 'free';
 
@@ -24,7 +33,30 @@ export default function SettingsPage() {
       if (d.plan) setPlan(d.plan);
       if (d.stripeCurrentPeriodEnd) setPeriodEnd(d.stripeCurrentPeriodEnd);
     }).catch(() => setPlan(sessionPlan));
+    // Fetch Stripe Connect status
+    fetch('/api/stripe/connect/status').then(r => r.json()).then(d => {
+      setStripeAccountId(d.stripeAccountId);
+      setStripeStatus(d.stripeAccountStatus || 'not_connected');
+    }).catch(() => {});
   }, [sessionPlan]);
+
+  // Handle stripe=connected / stripe=error query param on return from OAuth
+  useEffect(() => {
+    const stripeParam = searchParams.get('stripe');
+    if (stripeParam === 'connected') {
+      setStripeMessage('✅ Stripe account connected successfully!');
+      // Refresh status
+      fetch('/api/stripe/connect/status').then(r => r.json()).then(d => {
+        setStripeAccountId(d.stripeAccountId);
+        setStripeStatus(d.stripeAccountStatus || 'not_connected');
+      }).catch(() => {});
+      // Clean up URL
+      router.replace('/dashboard/settings');
+    } else if (stripeParam === 'error') {
+      setStripeMessage('❌ Failed to connect Stripe account. Please try again.');
+      router.replace('/dashboard/settings');
+    }
+  }, [searchParams, router]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,6 +76,25 @@ export default function SettingsPage() {
     await fetch('/api/business', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
     setSaving(false); setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleStripeConnect = () => {
+    setStripeConnecting(true);
+    window.location.href = '/api/stripe/connect';
+  };
+
+  const handleStripeDisconnect = async () => {
+    setStripeDisconnecting(true);
+    try {
+      await fetch('/api/stripe/connect/disconnect', { method: 'POST' });
+      setStripeAccountId(null);
+      setStripeStatus('not_connected');
+      setStripeMessage('Stripe account disconnected.');
+    } catch {
+      setStripeMessage('Failed to disconnect. Please try again.');
+    } finally {
+      setStripeDisconnecting(false);
+    }
   };
 
   const handleManageBilling = async () => {
@@ -117,6 +168,59 @@ export default function SettingsPage() {
               className="px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-300 rounded-xl text-sm font-medium transition-colors">
               See All Plans
             </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Stripe Payments section */}
+      <div className="mb-8 p-5 rounded-xl border bg-gray-900 border-gray-700">
+        <h2 className="font-semibold text-white mb-1">💳 Accept Payments</h2>
+        <p className="text-sm text-gray-400 mb-4">
+          Connect your Stripe account to receive invoice payments directly.{' '}
+          <span className="text-gray-500">SlateInvoice takes a 1% platform fee on each payment.</span>
+        </p>
+
+        {stripeMessage && (
+          <p className="text-sm mb-4 text-indigo-300">{stripeMessage}</p>
+        )}
+
+        <div className="flex items-center gap-3 mb-4">
+          {stripeStatus === 'active' && stripeAccountId ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-900/50 text-green-400 border border-green-700">
+              ✅ Connected
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gray-800 text-gray-400 border border-gray-600">
+              ❌ Not Connected
+            </span>
+          )}
+          {stripeAccountId && (
+            <span className="text-xs text-gray-500 font-mono">{stripeAccountId}</span>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          {stripeStatus === 'active' && stripeAccountId ? (
+            <>
+              <span className="px-4 py-2 bg-green-900/40 border border-green-700 text-green-400 rounded-xl text-sm font-semibold">
+                Stripe Account Connected ✓
+              </span>
+              <button
+                onClick={handleStripeDisconnect}
+                disabled={stripeDisconnecting}
+                className="px-4 py-2 bg-gray-700 hover:bg-red-900/40 hover:border-red-700 disabled:opacity-60 border border-gray-600 text-gray-300 hover:text-red-400 rounded-xl text-sm font-medium transition-colors"
+              >
+                {stripeDisconnecting ? 'Disconnecting...' : 'Disconnect'}
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={handleStripeConnect}
+              disabled={stripeConnecting}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors"
+            >
+              {stripeConnecting ? 'Redirecting to Stripe...' : 'Connect Stripe Account'}
+            </button>
           )}
         </div>
       </div>

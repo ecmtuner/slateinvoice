@@ -16,6 +16,8 @@ export default async function PublicPayPage({ params }: Props) {
   const userPlan = (invoice as any)?.user?.plan ?? 'free';
   const isPaidPlan = userPlan !== 'free';
   const logoUrl = isPaidPlan ? (business?.logo || null) : null;
+  const sellerStripeAccountId = (invoice as any)?.user?.stripeAccountId ?? null;
+  const paymentAvailable = !!sellerStripeAccountId;
 
   if (!invoice) {
     return (
@@ -201,15 +203,24 @@ export default async function PublicPayPage({ params }: Props) {
 
           {/* Pay button */}
           <div className="p-8">
-            <PayButton invoiceId={invoice.id} total={invoice.total} currency={invoice.currency} />
-
-            <div className="mt-4 flex items-center justify-center gap-3 text-xs text-gray-400">
-              <span>🔒 Secure payment</span>
-              <span>·</span>
-              <span>Visa · Mastercard · Amex · Discover</span>
-              <span>·</span>
-              <span>Powered by Stripe</span>
-            </div>
+            {paymentAvailable ? (
+              <>
+                <PayButton invoiceId={invoice.id} total={invoice.total} currency={invoice.currency} />
+                <div className="mt-4 flex items-center justify-center gap-3 text-xs text-gray-400">
+                  <span>🔒 Secure payment</span>
+                  <span>·</span>
+                  <span>Visa · Mastercard · Amex · Discover</span>
+                  <span>·</span>
+                  <span>Powered by Stripe</span>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-gray-500 text-sm">
+                  💳 Payment is not yet available for this invoice. Please contact the sender.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
