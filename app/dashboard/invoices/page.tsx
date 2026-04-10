@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Invoice {
   id: string; number: string; toName: string; total: number;
@@ -14,9 +15,17 @@ const statusConfig: Record<string, { text: string; bg: string; border: string; g
   overdue: { text: '#F87171', bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.3)', glow: 'rgba(239,68,68,0.15)' },
 };
 
+const typeConfig: Record<string, { label: string; color: string; bg: string }> = {
+  invoice: { label: 'Invoice', color: '#A78BFA', bg: 'rgba(139,92,246,0.1)' },
+  estimate: { label: 'Estimate', color: '#F5A623', bg: 'rgba(245,166,35,0.1)' },
+  receipt: { label: 'Receipt', color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
+};
+
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [filter, setFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const router = useRouter();
 
   useEffect(() => {
     fetch('/api/invoices').then(r => r.json()).then(d => { if (Array.isArray(d)) setInvoices(d); });
@@ -27,33 +36,68 @@ export default function InvoicesPage() {
     setInvoices(prev => prev.map(i => i.id === id ? { ...i, status: 'paid' } : i));
   };
 
-  const filtered = filter === 'all' ? invoices : invoices.filter(i => i.status === filter);
+  const convertToInvoice = async (id: string) => {
+    const res = await fetch(`/api/invoices/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'invoice', status: 'draft' }),
+    });
+    const data = await res.json();
+    if (data.id) router.push(`/dashboard/invoices/${data.id}`);
+  };
+
+  const filtered = invoices.filter(i => {
+    const matchStatus = statusFilter === 'all' || i.status === statusFilter;
+    const matchType = typeFilter === 'all' || i.type === typeFilter;
+    return matchStatus && matchType;
+  });
+
+  const btnActive = {
+    background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+    border: '1px solid rgba(139,92,246,0.4)',
+    color: '#fff',
+    boxShadow: '0 4px 12px rgba(139,92,246,0.3)',
+  };
+  const btnInactive = {
+    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    color: 'rgba(255,255,255,0.5)',
+  };
 
   return (
     <div className="p-6 max-w-5xl" style={{ position: 'relative', zIndex: 1 }}>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">Invoices</h1>
-        <Link href="/dashboard/invoices/new"
-          className="px-4 py-2 text-white rounded-xl font-medium transition-all btn-primary text-sm">
-          + New Invoice
-        </Link>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <h1 className="text-2xl font-bold text-white">Invoices & Estimates</h1>
+        <div className="flex gap-2">
+          <Link href="/dashboard/invoices/new?type=estimate"
+            className="px-4 py-2 text-white rounded-xl font-medium transition-all text-sm"
+            style={{ background: 'rgba(245,166,35,0.15)', border: '1px solid rgba(245,166,35,0.3)', color: '#F5A623' }}>
+            + New Estimate
+          </Link>
+          <Link href="/dashboard/invoices/new"
+            className="px-4 py-2 text-white rounded-xl font-medium transition-all btn-primary text-sm">
+            + New Invoice
+          </Link>
+        </div>
       </div>
 
-      {/* Filters */}
+      {/* Type Tabs */}
+      <div className="flex gap-2 mb-3 flex-wrap">
+        {[['all', 'All'], ['invoice', 'Invoices'], ['estimate', 'Estimates'], ['receipt', 'Receipts']].map(([val, label]) => (
+          <button key={val} onClick={() => setTypeFilter(val)}
+            className="px-3 py-1.5 rounded-lg text-sm transition-all font-medium"
+            style={typeFilter === val ? btnActive : btnInactive}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Status Filters */}
       <div className="flex gap-2 mb-6 flex-wrap">
         {['all', 'draft', 'sent', 'paid', 'overdue'].map(s => (
-          <button key={s} onClick={() => setFilter(s)}
+          <button key={s} onClick={() => setStatusFilter(s)}
             className="px-3 py-1.5 rounded-lg text-sm capitalize transition-all font-medium"
-            style={filter === s ? {
-              background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-              border: '1px solid rgba(139,92,246,0.4)',
-              color: '#fff',
-              boxShadow: '0 4px 12px rgba(139,92,246,0.3)',
-            } : {
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              color: 'rgba(255,255,255,0.5)',
-            }}>
+            style={statusFilter === s ? btnActive : btnInactive}>
             {s}
           </button>
         ))}
@@ -85,10 +129,10 @@ export default function InvoicesPage() {
           <table className="w-full">
             <thead style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <tr className="text-xs uppercase" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                <th className="text-left p-4">Invoice #</th>
+                <th className="text-left p-4">Number</th>
+                <th className="text-left p-4">Type</th>
                 <th className="text-left p-4">Client</th>
                 <th className="text-left p-4">Date</th>
-                <th className="text-left p-4">Due</th>
                 <th className="text-right p-4">Amount</th>
                 <th className="text-center p-4">Status</th>
                 <th className="text-right p-4">Actions</th>
@@ -112,9 +156,17 @@ export default function InvoicesPage() {
                         {inv.number}
                       </Link>
                     </td>
+                    <td className="p-4">
+                      <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                        style={{
+                          color: typeConfig[inv.type]?.color || '#A78BFA',
+                          background: typeConfig[inv.type]?.bg || 'rgba(139,92,246,0.1)',
+                        }}>
+                        {typeConfig[inv.type]?.label || inv.type}
+                      </span>
+                    </td>
                     <td className="p-4 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>{inv.toName || '—'}</td>
                     <td className="p-4 text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>{inv.issueDate}</td>
-                    <td className="p-4 text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>{inv.dueDate || '—'}</td>
                     <td className="p-4 text-right text-sm font-semibold text-white">{inv.currency} {inv.total.toFixed(2)}</td>
                     <td className="p-4 text-center">
                       <span className="text-xs px-2.5 py-1 rounded-full font-medium capitalize"
@@ -129,7 +181,20 @@ export default function InvoicesPage() {
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {inv.status !== 'paid' && (
+                        {inv.type === 'estimate' && (
+                          <button onClick={() => convertToInvoice(inv.id)}
+                            className="text-xs px-2 py-1 rounded-lg transition-all"
+                            style={{
+                              color: '#F5A623',
+                              background: 'rgba(245,166,35,0.1)',
+                              border: '1px solid rgba(245,166,35,0.25)',
+                            }}
+                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(245,166,35,0.2)'}
+                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'rgba(245,166,35,0.1)'}>
+                            → Convert
+                          </button>
+                        )}
+                        {inv.status !== 'paid' && inv.type !== 'estimate' && (
                           <button onClick={() => markPaid(inv.id)}
                             className="text-xs px-2 py-1 rounded-lg transition-all"
                             style={{

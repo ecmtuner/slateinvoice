@@ -75,6 +75,17 @@ export default function InvoiceDetailPage() {
     router.push('/dashboard/invoices');
   };
 
+  const convertToInvoice = async () => {
+    if (!confirm('Convert this estimate to an invoice?')) return;
+    const res = await fetch(`/api/invoices/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'invoice', status: 'draft' }),
+    });
+    const data = await res.json();
+    if (data.id) setInvoice(data);
+  };
+
   if (!invoice) return <div className="p-6 text-gray-400">Loading...</div>;
   const typeLabel = invoice.type.charAt(0).toUpperCase() + invoice.type.slice(1);
 
@@ -87,7 +98,12 @@ export default function InvoiceDetailPage() {
           <span className={`text-xs px-2 py-1 rounded-full ${statusColor[invoice.status] || statusColor.draft}`}>{invoice.status}</span>
         </div>
         <div className="flex gap-2 flex-wrap">
-          {invoice.status !== 'paid' && (
+          {invoice.type === 'estimate' && (
+            <button onClick={convertToInvoice} disabled={updating} className="px-3 py-1.5 text-amber-400 rounded-lg text-sm font-medium disabled:opacity-60 border border-amber-700/50 bg-amber-900/20 hover:bg-amber-900/40 transition-colors">
+              🔄 Convert to Invoice
+            </button>
+          )}
+          {invoice.status !== 'paid' && invoice.type !== 'estimate' && (
             <button onClick={() => updateStatus('paid')} disabled={updating} className="px-3 py-1.5 bg-green-700 hover:bg-green-600 text-white rounded-lg text-sm font-medium disabled:opacity-60">
               ✓ Mark Paid
             </button>
