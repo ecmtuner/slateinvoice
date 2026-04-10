@@ -262,7 +262,7 @@ export default function LandingPage() {
             backdropFilter: 'blur(16px)',
           }}>
           <p className="font-semibold text-lg mb-2" style={{ color: '#A78BFA' }}>💸 Why pay more?</p>
-          <p className="text-sm text-white/50">Competitors charge $20–$30/month for the same features. SlateInvoice starts at <strong className="text-white">$7/mo</strong> for Starter and <strong className="text-white">$15/mo</strong> for unlimited — saving you up to $180/year.</p>
+          <p className="text-sm text-white/50">FreshBooks and QuickBooks charge $20–$30/month for the same features. SlateInvoice starts at <strong className="text-white">$7/mo</strong> and goes unlimited at <strong className="text-white">$15/mo</strong> — plus contractors get GPS + photo chargeback protection on the <strong className="text-white">Business plan at $25/mo</strong>. Save up to $180/year.</p>
         </div>
       </section>
 
