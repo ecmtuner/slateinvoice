@@ -37,7 +37,6 @@ function SignupForm() {
     e.preventDefault();
     setLoading(true); setError('');
 
-    // 1. Create account
     const res = await fetch('/api/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -46,7 +45,6 @@ function SignupForm() {
     const data = await res.json();
     if (!res.ok) { setError(data.error || 'Signup failed'); setLoading(false); return; }
 
-    // 2. Sign in
     const signin = await signIn('credentials', { email, password, redirect: false });
     if (!signin?.ok) {
       setError('Account created but sign-in failed. Try logging in.');
@@ -54,7 +52,6 @@ function SignupForm() {
       return;
     }
 
-    // 3. If plan selected (non-free), redirect to Stripe checkout
     if (planParam && planParam !== 'free' && PLAN_PRICE_IDS[planParam]) {
       const priceId = PLAN_PRICE_IDS[planParam];
       const checkoutRes = await fetch('/api/subscription/checkout', {
@@ -67,12 +64,10 @@ function SignupForm() {
         window.location.href = checkoutData.url;
         return;
       } else {
-        // Fall through to dashboard if checkout creation fails
         console.error('Checkout failed:', checkoutData.error);
       }
     }
 
-    // 4. Default: go to dashboard
     router.push('/dashboard');
   };
 
@@ -82,51 +77,93 @@ function SignupForm() {
     business: 'Business — $25/mo',
   };
 
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '14px 16px',
+    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(255,255,255,0.10)',
+    borderRadius: '12px',
+    color: '#fff',
+    fontSize: '15px',
+    outline: 'none',
+    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+  };
+
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ position: 'relative', zIndex: 1 }}>
       <div className="w-full max-w-sm">
+        {/* Logo & heading */}
         <div className="text-center mb-8">
-          <Link href="/" className="text-4xl">🧾</Link>
-          <h1 className="text-2xl font-bold text-white mt-3">Create your account</h1>
+          <Link href="/" className="inline-block text-5xl mb-4">🧾</Link>
+          <h1 className="text-2xl font-bold text-white">Create your account</h1>
           {planParam && planParam !== 'free' ? (
-            <p className="text-blue-400 text-sm mt-1 font-medium">
+            <p className="text-sm mt-2 font-medium" style={{ color: '#A78BFA' }}>
               Selected plan: {planLabels[planParam] || planParam}
             </p>
           ) : (
-            <p className="text-gray-500 text-sm mt-1">Free forever · No credit card needed</p>
+            <p className="text-white/40 text-sm mt-2">Free forever · No credit card needed</p>
           )}
         </div>
-        {/* Google Sign Up */}
-        <button
-          onClick={async () => { setGoogleLoading(true); await signIn('google', { callbackUrl: '/dashboard' }); }}
-          disabled={googleLoading}
-          className="w-full flex items-center justify-center gap-3 py-3 bg-white hover:bg-gray-100 disabled:opacity-60 text-gray-900 rounded-xl font-semibold transition-colors border border-gray-200 mb-4"
-        >
-          <GoogleLogo />
-          {googleLoading ? 'Redirecting...' : 'Sign up with Google'}
-        </button>
 
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex-1 border-t border-gray-800" />
-          <span className="text-gray-600 text-xs">or sign up with email</span>
-          <div className="flex-1 border-t border-gray-800" />
+        {/* Glass card */}
+        <div className="p-6 rounded-2xl"
+          style={{
+            background: 'rgba(255,255,255,0.07)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            boxShadow: '0 8px 40px rgba(139,92,246,0.15)',
+          }}>
+          {/* Google Sign Up */}
+          <button
+            onClick={async () => { setGoogleLoading(true); await signIn('google', { callbackUrl: '/dashboard' }); }}
+            disabled={googleLoading}
+            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl font-semibold transition-all mb-4"
+            style={{ background: 'rgba(255,255,255,0.95)', color: '#111' }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,1)'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.95)'}>
+            <GoogleLogo />
+            {googleLoading ? 'Redirecting...' : 'Sign up with Google'}
+          </button>
+
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-1" style={{ height: '1px', background: 'rgba(255,255,255,0.08)' }} />
+            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>or sign up with email</span>
+            <div className="flex-1" style={{ height: '1px', background: 'rgba(255,255,255,0.08)' }} />
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-3">
+            {error && (
+              <div className="p-3 rounded-xl text-sm"
+                style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#FCA5A5' }}>
+                {error}
+              </div>
+            )}
+            <input type="text" placeholder="Your name" value={name} onChange={e => setName(e.target.value)}
+              style={inputStyle}
+              onFocus={e => { e.target.style.borderColor = 'rgba(139,92,246,0.6)'; e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.15)'; }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.10)'; e.target.style.boxShadow = 'none'; }}
+              className="placeholder-white/30" />
+            <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required
+              style={inputStyle}
+              onFocus={e => { e.target.style.borderColor = 'rgba(139,92,246,0.6)'; e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.15)'; }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.10)'; e.target.style.boxShadow = 'none'; }}
+              className="placeholder-white/30" />
+            <input type="password" placeholder="Password (min 6 chars)" value={password} onChange={e => setPassword(e.target.value)} required minLength={6}
+              style={inputStyle}
+              onFocus={e => { e.target.style.borderColor = 'rgba(139,92,246,0.6)'; e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.15)'; }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.10)'; e.target.style.boxShadow = 'none'; }}
+              className="placeholder-white/30" />
+            <button type="submit" disabled={loading}
+              className="w-full py-3 text-white rounded-xl font-semibold disabled:opacity-60 transition-all btn-primary mt-1">
+              {loading ? 'Creating account...' : planParam && planParam !== 'free' ? 'Create Account & Continue to Payment' : 'Create Free Account'}
+            </button>
+          </form>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <div className="p-3 bg-red-900/30 border border-red-700 rounded-lg text-red-300 text-sm">{error}</div>}
-          <input type="text" placeholder="Your name" value={name} onChange={e => setName(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
-          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required
-            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
-          <input type="password" placeholder="Password (min 6 chars)" value={password} onChange={e => setPassword(e.target.value)} required minLength={6}
-            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
-          <button type="submit" disabled={loading}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white rounded-xl font-semibold transition-colors">
-            {loading ? 'Creating account...' : planParam && planParam !== 'free' ? 'Create Account & Continue to Payment' : 'Create Free Account'}
-          </button>
-        </form>
-        <p className="text-center text-gray-500 text-sm mt-6">
-          Already have an account? <Link href="/login" className="text-blue-400 hover:text-blue-300">Sign in</Link>
+        <p className="text-center text-white/30 text-sm mt-5">
+          Already have an account?{' '}
+          <Link href="/login" className="text-violet-400 hover:text-violet-300 transition-colors">Sign in</Link>
         </p>
       </div>
     </div>
@@ -135,7 +172,11 @@ function SignupForm() {
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-950 flex items-center justify-center text-gray-400">Loading...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        Loading...
+      </div>
+    }>
       <SignupForm />
     </Suspense>
   );

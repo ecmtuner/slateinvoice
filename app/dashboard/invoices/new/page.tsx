@@ -22,6 +22,87 @@ function addDays(dateStr: string, days: number) {
   return d.toISOString().split('T')[0];
 }
 
+const glassCard = {
+  background: 'rgba(255,255,255,0.05)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: '16px',
+};
+
+const inputStyle = {
+  background: 'rgba(255,255,255,0.05)',
+  border: '1px solid rgba(255,255,255,0.10)',
+  borderRadius: '10px',
+  color: '#fff',
+  outline: 'none',
+  width: '100%',
+  padding: '10px 12px',
+  fontSize: '14px',
+  transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+};
+
+function GlassInput({ value, onChange, placeholder, type = 'text', min, max, list }: {
+  value: string | number; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string; type?: string; min?: string; max?: string; list?: string;
+}) {
+  return (
+    <input
+      type={type} value={value} onChange={onChange} placeholder={placeholder}
+      min={min} max={max} list={list}
+      style={inputStyle}
+      onFocus={e => {
+        e.target.style.borderColor = 'rgba(139,92,246,0.6)';
+        e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.15)';
+      }}
+      onBlur={e => {
+        e.target.style.borderColor = 'rgba(255,255,255,0.10)';
+        e.target.style.boxShadow = 'none';
+      }}
+      className="placeholder-white/30"
+    />
+  );
+}
+
+function GlassSelect({ value, onChange, children }: {
+  value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; children: React.ReactNode;
+}) {
+  return (
+    <select value={value} onChange={onChange}
+      style={{ ...inputStyle, cursor: 'pointer' }}
+      onFocus={e => {
+        e.target.style.borderColor = 'rgba(139,92,246,0.6)';
+        e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.15)';
+      }}
+      onBlur={e => {
+        e.target.style.borderColor = 'rgba(255,255,255,0.10)';
+        e.target.style.boxShadow = 'none';
+      }}>
+      {children}
+    </select>
+  );
+}
+
+function GlassTextarea({ value, onChange, placeholder, rows }: {
+  value: string; onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string; rows?: number;
+}) {
+  return (
+    <textarea value={value} onChange={onChange} placeholder={placeholder} rows={rows}
+      style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
+      onFocus={e => {
+        e.target.style.borderColor = 'rgba(139,92,246,0.6)';
+        e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.15)';
+      }}
+      onBlur={e => {
+        e.target.style.borderColor = 'rgba(255,255,255,0.10)';
+        e.target.style.boxShadow = 'none';
+      }}
+      className="placeholder-white/30"
+    />
+  );
+}
+
 function NewInvoiceInner() {
   const router = useRouter();
   const params = useSearchParams();
@@ -110,90 +191,111 @@ function NewInvoiceInner() {
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'Failed to save'); setSaving(false); return; }
       router.push(`/dashboard/invoices/${data.id}`);
-    } catch (err: any) {
-      setError(err.name === 'AbortError' ? 'Request timed out — please try again' : 'Something went wrong. Please try again.');
+    } catch (err: unknown) {
+      const e = err as { name?: string };
+      setError(e.name === 'AbortError' ? 'Request timed out — please try again' : 'Something went wrong. Please try again.');
       setSaving(false);
     }
   };
 
   const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
 
+  const sectionHeader = (text: string) => (
+    <h3 className="text-xs font-semibold uppercase mb-4 tracking-wider"
+      style={{ background: 'linear-gradient(90deg, #A78BFA, #22D3EE)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+      {text}
+    </h3>
+  );
+
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="p-6 max-w-4xl" style={{ position: 'relative', zIndex: 1 }}>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">New {typeLabel}</h1>
         <div className="flex gap-2">
-          <button onClick={() => handleSave('draft')} disabled={saving} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-xl text-sm font-medium disabled:opacity-60 transition-colors">
+          <button onClick={() => handleSave('draft')} disabled={saving}
+            className="px-4 py-2 text-white/70 rounded-xl text-sm font-medium disabled:opacity-60 transition-all hover:text-white"
+            style={{
+              background: 'rgba(255,255,255,0.07)',
+              border: '1px solid rgba(255,255,255,0.12)',
+            }}>
             Save Draft
           </button>
-          <button onClick={() => handleSave('sent')} disabled={saving} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium disabled:opacity-60 transition-colors">
+          <button onClick={() => handleSave('sent')} disabled={saving}
+            className="px-4 py-2 text-white rounded-xl text-sm font-medium disabled:opacity-60 transition-all btn-primary">
             {saving ? 'Saving...' : `Send ${typeLabel}`}
           </button>
         </div>
       </div>
 
-      {error && <div className="mb-4 p-3 bg-red-900/30 border border-red-700 rounded-xl text-red-300 text-sm">{error}</div>}
+      {error && (
+        <div className="mb-4 p-3 rounded-xl text-sm"
+          style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#FCA5A5' }}>
+          {error}
+        </div>
+      )}
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         {/* Template Selector */}
         <TemplateSelector value={form.template} onChange={t => setForm(f => ({ ...f, template: t }))} />
 
         {/* From / To */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-gray-400 uppercase mb-3">From (Your Business)</h3>
-            <div className="space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="p-5" style={glassCard}>
+            {sectionHeader('From (Your Business)')}
+            <div className="space-y-2.5">
               {(['fromName','fromEmail','fromPhone','fromAddress'] as const).map(k => (
-                <input key={k} value={form[k]} onChange={e => setForm(f => ({...f, [k]: e.target.value}))}
-                  placeholder={k.replace('from','').replace(/([A-Z])/g,' $1').trim()}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
+                <GlassInput key={k} value={form[k]}
+                  onChange={e => setForm(f => ({...f, [k]: e.target.value}))}
+                  placeholder={k.replace('from','').replace(/([A-Z])/g,' $1').trim()} />
               ))}
             </div>
           </div>
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-gray-400 uppercase mb-3">Bill To</h3>
-            <select value={form.clientId} onChange={e => selectClient(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white mb-2 focus:outline-none focus:border-blue-500">
-              <option value="">Select saved client...</option>
-              {clients.map(c => <option key={c.id} value={c.id}>{c.name}{c.company ? ` (${c.company})` : ''}</option>)}
-            </select>
-            <div className="space-y-2">
+          <div className="p-5" style={glassCard}>
+            {sectionHeader('Bill To')}
+            <div className="mb-2.5">
+              <GlassSelect value={form.clientId} onChange={e => selectClient(e.target.value)}>
+                <option value="" style={{ background: '#1a0035' }}>Select saved client...</option>
+                {clients.map(c => <option key={c.id} value={c.id} style={{ background: '#1a0035' }}>{c.name}{c.company ? ` (${c.company})` : ''}</option>)}
+              </GlassSelect>
+            </div>
+            <div className="space-y-2.5">
               {(['toName','toEmail','toPhone','toAddress'] as const).map(k => (
-                <input key={k} value={form[k]} onChange={e => setForm(f => ({...f, [k]: e.target.value}))}
-                  placeholder={k.replace('to','').replace(/([A-Z])/g,' $1').trim()}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
+                <GlassInput key={k} value={form[k]}
+                  onChange={e => setForm(f => ({...f, [k]: e.target.value}))}
+                  placeholder={k.replace('to','').replace(/([A-Z])/g,' $1').trim()} />
               ))}
             </div>
           </div>
         </div>
 
         {/* Invoice Details */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+        <div className="p-5" style={glassCard}>
+          {sectionHeader('Invoice Details')}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">{typeLabel} Number</label>
-              <input value={form.number} onChange={e => setForm(f => ({...f, number: e.target.value}))} placeholder="Auto"
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500" />
+              <label className="text-xs text-white/40 mb-1.5 block">{typeLabel} Number</label>
+              <GlassInput value={form.number} onChange={e => setForm(f => ({...f, number: e.target.value}))} placeholder="Auto" />
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Currency</label>
-              <select value={form.currency} onChange={e => setForm(f => ({...f, currency: e.target.value}))}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500">
-                {CURRENCIES.map(c => <option key={c}>{c}</option>)}
-              </select>
+              <label className="text-xs text-white/40 mb-1.5 block">Currency</label>
+              <GlassSelect value={form.currency} onChange={e => setForm(f => ({...f, currency: e.target.value}))}>
+                {CURRENCIES.map(c => <option key={c} style={{ background: '#1a0035' }}>{c}</option>)}
+              </GlassSelect>
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Issue Date</label>
-              <input type="date" value={form.issueDate} onChange={e => setForm(f => ({...f, issueDate: e.target.value}))}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500" />
+              <label className="text-xs text-white/40 mb-1.5 block">Issue Date</label>
+              <GlassInput type="date" value={form.issueDate} onChange={e => setForm(f => ({...f, issueDate: e.target.value}))} />
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Due Date</label>
-              <input type="date" value={form.dueDate} onChange={e => setForm(f => ({...f, dueDate: e.target.value}))}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500" />
-              <div className="flex gap-1 mt-1 flex-wrap">
+              <label className="text-xs text-white/40 mb-1.5 block">Due Date</label>
+              <GlassInput type="date" value={form.dueDate} onChange={e => setForm(f => ({...f, dueDate: e.target.value}))} />
+              <div className="flex gap-2 mt-1.5 flex-wrap">
                 {DUE_TERMS.map(t => (
-                  <button key={t.label} onClick={() => applyTerms(t.days)} className="text-xs text-blue-400 hover:text-blue-300">
+                  <button key={t.label} onClick={() => applyTerms(t.days)}
+                    className="text-xs transition-colors"
+                    style={{ color: '#A78BFA' }}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#C4B5FD'}
+                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#A78BFA'}>
                     {t.label}
                   </button>
                 ))}
@@ -203,88 +305,116 @@ function NewInvoiceInner() {
         </div>
 
         {/* Line Items */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-gray-400 uppercase mb-4">Line Items</h3>
-          <div className="space-y-2">
+        <div className="p-5" style={glassCard}>
+          {sectionHeader('Line Items')}
+          <div className="space-y-2.5">
             {items.map((item, i) => (
-              <div key={i} className="grid grid-cols-12 gap-2 items-center">
+              <div key={i} className="grid grid-cols-12 gap-2 items-center p-2.5 rounded-xl"
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <div className="col-span-5">
-                  <input value={item.description} onChange={e => updateItem(i, 'description', e.target.value)}
-                    placeholder="Description" list={`products-${i}`}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
+                  <GlassInput value={item.description}
+                    onChange={e => updateItem(i, 'description', e.target.value)}
+                    placeholder="Description" list={`products-${i}`} />
                   <datalist id={`products-${i}`}>
                     {products.map(p => <option key={p.id} value={p.name} />)}
                   </datalist>
                 </div>
                 <div className="col-span-2">
-                  <input type="number" value={item.qty} onChange={e => updateItem(i, 'qty', parseFloat(e.target.value) || 0)}
-                    placeholder="Qty" min="0"
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500" />
+                  <GlassInput type="number" value={item.qty}
+                    onChange={e => updateItem(i, 'qty', parseFloat(e.target.value) || 0)}
+                    placeholder="Qty" min="0" />
                 </div>
                 <div className="col-span-2">
-                  <input type="number" value={item.unitPrice} onChange={e => updateItem(i, 'unitPrice', parseFloat(e.target.value) || 0)}
-                    placeholder="Price" min="0"
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500" />
+                  <GlassInput type="number" value={item.unitPrice}
+                    onChange={e => updateItem(i, 'unitPrice', parseFloat(e.target.value) || 0)}
+                    placeholder="Price" min="0" />
                 </div>
                 <div className="col-span-2 text-right text-sm font-medium text-white">
                   {form.currency} {item.amount.toFixed(2)}
                 </div>
                 <div className="col-span-1 text-right">
-                  <button onClick={() => removeItem(i)} className="text-gray-600 hover:text-red-400 text-lg">×</button>
+                  <button onClick={() => removeItem(i)}
+                    className="text-white/20 hover:text-red-400 text-xl transition-colors leading-none">
+                    ×
+                  </button>
                 </div>
               </div>
             ))}
           </div>
-          <button onClick={addItem} className="mt-3 text-sm text-blue-400 hover:text-blue-300">+ Add line item</button>
+          <button onClick={addItem}
+            className="mt-3 text-sm transition-colors"
+            style={{ color: '#A78BFA' }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#C4B5FD'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#A78BFA'}>
+            + Add line item
+          </button>
 
           {/* Totals */}
-          <div className="mt-6 border-t border-gray-800 pt-4 space-y-2 max-w-xs ml-auto">
-            <div className="flex justify-between text-sm text-gray-400">
+          <div className="mt-6 pt-4 space-y-3 max-w-xs ml-auto"
+            style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="flex justify-between text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
               <span>Subtotal</span><span className="text-white">{form.currency} {subtotal.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between items-center text-sm text-gray-400">
+            <div className="flex justify-between items-center text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
               <span>Discount (%)</span>
-              <input type="number" value={form.discountRate} onChange={e => setForm(f => ({...f, discountRate: parseFloat(e.target.value)||0}))}
-                className="w-20 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-sm text-white text-right focus:outline-none focus:border-blue-500" min="0" max="100" />
+              <input type="number" value={form.discountRate}
+                onChange={e => setForm(f => ({...f, discountRate: parseFloat(e.target.value)||0}))}
+                min="0" max="100"
+                style={{ ...inputStyle, width: '80px', padding: '4px 8px', textAlign: 'right' }}
+                onFocus={e => { e.target.style.borderColor = 'rgba(139,92,246,0.6)'; e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.15)'; }}
+                onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.10)'; e.target.style.boxShadow = 'none'; }} />
             </div>
-            <div className="flex justify-between items-center text-sm text-gray-400">
+            <div className="flex justify-between items-center text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
               <span>Tax (%)</span>
-              <input type="number" value={form.taxRate} onChange={e => setForm(f => ({...f, taxRate: parseFloat(e.target.value)||0}))}
-                className="w-20 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-sm text-white text-right focus:outline-none focus:border-blue-500" min="0" max="100" />
+              <input type="number" value={form.taxRate}
+                onChange={e => setForm(f => ({...f, taxRate: parseFloat(e.target.value)||0}))}
+                min="0" max="100"
+                style={{ ...inputStyle, width: '80px', padding: '4px 8px', textAlign: 'right' }}
+                onFocus={e => { e.target.style.borderColor = 'rgba(139,92,246,0.6)'; e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.15)'; }}
+                onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.10)'; e.target.style.boxShadow = 'none'; }} />
             </div>
-            <div className="flex justify-between items-center text-sm text-gray-400">
+            <div className="flex justify-between items-center text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
               <span>Additional Fees</span>
-              <input type="number" value={form.fees} onChange={e => setForm(f => ({...f, fees: parseFloat(e.target.value)||0}))}
-                className="w-20 px-2 py-1 bg-gray-800 border border-gray-700 rounded text-sm text-white text-right focus:outline-none focus:border-blue-500" min="0" />
+              <input type="number" value={form.fees}
+                onChange={e => setForm(f => ({...f, fees: parseFloat(e.target.value)||0}))}
+                min="0"
+                style={{ ...inputStyle, width: '80px', padding: '4px 8px', textAlign: 'right' }}
+                onFocus={e => { e.target.style.borderColor = 'rgba(139,92,246,0.6)'; e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.15)'; }}
+                onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.10)'; e.target.style.boxShadow = 'none'; }} />
             </div>
-            <div className="flex justify-between text-base font-bold text-white border-t border-gray-700 pt-2">
-              <span>Total</span><span>{form.currency} {total.toFixed(2)}</span>
+            <div className="flex justify-between text-base font-bold text-white pt-3"
+              style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <span>Total</span>
+              <span style={{ color: '#A78BFA' }}>{form.currency} {total.toFixed(2)}</span>
             </div>
           </div>
         </div>
 
         {/* Notes & Terms */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-            <label className="text-xs text-gray-500 uppercase mb-2 block">Notes</label>
-            <textarea value={form.notes} onChange={e => setForm(f => ({...f, notes: e.target.value}))}
-              placeholder="Thank you for your business!" rows={3}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="p-5" style={glassCard}>
+            <label className="text-xs text-white/40 uppercase mb-2 block tracking-wider">Notes</label>
+            <GlassTextarea value={form.notes}
+              onChange={e => setForm(f => ({...f, notes: e.target.value}))}
+              placeholder="Thank you for your business!" rows={3} />
           </div>
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-            <label className="text-xs text-gray-500 uppercase mb-2 block">Terms & Conditions</label>
-            <textarea value={form.terms} onChange={e => setForm(f => ({...f, terms: e.target.value}))}
-              placeholder="Payment due within 30 days..." rows={3}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none" />
+          <div className="p-5" style={glassCard}>
+            <label className="text-xs text-white/40 uppercase mb-2 block tracking-wider">Terms & Conditions</label>
+            <GlassTextarea value={form.terms}
+              onChange={e => setForm(f => ({...f, terms: e.target.value}))}
+              placeholder="Payment due within 30 days..." rows={3} />
           </div>
         </div>
 
         {/* Save buttons */}
-        <div className="flex gap-3 justify-end">
-          <button onClick={() => handleSave('draft')} disabled={saving} className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-medium disabled:opacity-60 transition-colors">
+        <div className="flex gap-3 justify-end pb-6">
+          <button onClick={() => handleSave('draft')} disabled={saving}
+            className="px-6 py-3 text-white/70 rounded-xl font-medium disabled:opacity-60 transition-all hover:text-white"
+            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)' }}>
             Save as Draft
           </button>
-          <button onClick={() => handleSave('sent')} disabled={saving} className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold disabled:opacity-60 transition-colors">
+          <button onClick={() => handleSave('sent')} disabled={saving}
+            className="px-6 py-3 text-white rounded-xl font-semibold disabled:opacity-60 transition-all btn-primary">
             {saving ? 'Saving...' : `Send ${typeLabel}`}
           </button>
         </div>
@@ -295,7 +425,7 @@ function NewInvoiceInner() {
 
 export default function NewInvoicePage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Loading...</div>}>
+    <Suspense fallback={<div className="p-6" style={{ color: 'rgba(255,255,255,0.4)' }}>Loading...</div>}>
       <NewInvoiceInner />
     </Suspense>
   );
