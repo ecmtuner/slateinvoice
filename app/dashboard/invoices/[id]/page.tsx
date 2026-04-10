@@ -93,6 +93,11 @@ export default function InvoiceDetailPage() {
               Send
             </button>
           )}
+          {invoice.status !== 'paid' && (
+            <Link href={`/dashboard/invoices/${invoice.id}/edit`} className="px-3 py-1.5 bg-gray-800 hover:bg-violet-900/40 text-gray-300 hover:text-violet-300 rounded-lg text-sm border border-gray-700 hover:border-violet-700 transition-colors print:hidden">
+              ✏️ Edit
+            </Link>
+          )}
           <CopyPaymentLinkButton invoiceId={invoice.id} />
           <PrintButton />
           <button onClick={deleteInvoice} className="px-3 py-1.5 bg-gray-800 hover:bg-red-900/30 text-gray-400 hover:text-red-400 rounded-lg text-sm print:hidden">
