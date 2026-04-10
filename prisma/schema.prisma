@@ -103,9 +103,20 @@ model Invoice {
   stripePaymentId String?
   reminderSentAt  DateTime?
   template        String        @default("classic")
+  locationLat     Float?
+  locationLng     Float?
+  locationAddress String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   items           InvoiceItem[]
+  photos          InvoicePhoto[]
+}
+
+model InvoicePhoto {
+  id        String  @id @default(cuid())
+  invoiceId String
+  url       String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }
 
 model InvoiceItem {

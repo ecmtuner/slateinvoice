@@ -34,6 +34,7 @@ function PrintButton() {
 }
 
 interface InvoiceItem { description: string; qty: number; unitPrice: number; amount: number; }
+interface InvoicePhoto { id: string; url: string; }
 interface Invoice {
   id: string; number: string; type: string; status: string; currency: string;
   fromName: string; fromEmail: string; fromPhone: string; fromAddress: string;
@@ -41,6 +42,8 @@ interface Invoice {
   issueDate: string; dueDate: string; subtotal: number; taxRate: number; taxAmount: number;
   discountRate: number; discountAmount: number; fees: number; total: number;
   notes: string; terms: string; items: InvoiceItem[];
+  locationLat?: number; locationLng?: number; locationAddress?: string;
+  photos?: InvoicePhoto[];
 }
 
 const statusColor: Record<string,string> = {
@@ -53,6 +56,7 @@ export default function InvoiceDetailPage() {
   const router = useRouter();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [updating, setUpdating] = useState(false);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/invoices/${id}`).then(r => r.json()).then(d => { if (d.id) setInvoice(d); });
@@ -180,6 +184,44 @@ export default function InvoiceDetailPage() {
           </div>
         )}
 
+        {/* Job Site Evidence Section */}
+        {((invoice.photos && invoice.photos.length > 0) || invoice.locationAddress) && (
+          <div className="border-t border-gray-800 pt-6 mt-2">
+            <div className="flex items-center gap-2 mb-4">
+              <h3 className="text-sm font-semibold text-white">📍 Job Site Evidence</h3>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-green-900/30 text-green-400 border border-green-800">
+                ✓ Chargeback Protected
+              </span>
+            </div>
+            {invoice.locationAddress && (
+              <div className="mb-4">
+                <p className="text-xs text-gray-500 uppercase mb-1">Work Location</p>
+                <a
+                  href={`https://maps.google.com/?q=${invoice.locationLat},${invoice.locationLng}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  📍 {invoice.locationAddress}
+                </a>
+              </div>
+            )}
+            {invoice.photos && invoice.photos.length > 0 && (
+              <div>
+                <p className="text-xs text-gray-500 uppercase mb-2">Job Site Photos ({invoice.photos.length})</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {invoice.photos.map(photo => (
+                    <div key={photo.id} className="aspect-square rounded-xl overflow-hidden cursor-pointer border border-gray-700 hover:border-gray-500 transition-colors"
+                      onClick={() => setLightboxUrl(photo.url)}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={photo.url} alt="Job site" className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Payment link — shows on printed PDF */}
         <div className="hidden print:block border-t border-gray-200 pt-6 mt-4 text-center">
           <p className="text-sm text-gray-500 mb-1">Pay online securely at:</p>
@@ -189,6 +231,16 @@ export default function InvoiceDetailPage() {
           <p className="text-xs text-gray-400 mt-1">Powered by SlateInvoice · Secure payments via Stripe</p>
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightboxUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm"
+          onClick={() => setLightboxUrl(null)}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={lightboxUrl} alt="Job site photo" className="max-w-full rounded-2xl object-contain" style={{ maxHeight: '85vh' }} onClick={e => e.stopPropagation()} />
+          <button className="absolute top-4 right-4 text-white text-3xl font-bold" onClick={() => setLightboxUrl(null)}>×</button>
+        </div>
+      )}
 
       {/* Print styles */}
       <style jsx global>{`

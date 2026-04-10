@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import JobSiteEvidence from '@/components/JobSiteEvidence';
 
 interface Client { id: string; name: string; company: string; email: string; phone: string; address: string; }
 interface Product { id: string; name: string; price: number; unit: string; }
@@ -91,6 +92,7 @@ export default function EditInvoicePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [userPlan, setUserPlan] = useState('free');
   const [clients, setClients] = useState<Client[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
 
@@ -116,6 +118,7 @@ export default function EditInvoicePage() {
   ]);
 
   useEffect(() => {
+    fetch('/api/user/plan').then(r => r.json()).then(d => { if (d.plan) setUserPlan(d.plan); });
     Promise.all([
       fetch(`/api/invoices/${id}`).then(r => r.json()),
       fetch('/api/clients').then(r => r.json()),
@@ -410,6 +413,9 @@ export default function EditInvoicePage() {
               placeholder="Payment due within 30 days..." rows={3} />
           </div>
         </div>
+
+        {/* Job Site Evidence — Chargeback Protection (Business plan) */}
+        <JobSiteEvidence invoiceId={id} userPlan={userPlan} />
 
         {/* Save buttons */}
         <div className="flex gap-3 justify-end pb-6">

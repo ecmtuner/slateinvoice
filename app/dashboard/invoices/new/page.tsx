@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import TemplateSelector from '@/components/TemplateSelector';
+import Link from 'next/link';
 
 interface Client { id: string; name: string; company: string; email: string; phone: string; address: string; }
 interface Product { id: string; name: string; price: number; unit: string; }
@@ -112,6 +113,7 @@ function NewInvoiceInner() {
   const [products, setProducts] = useState<Product[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [userPlan, setUserPlan] = useState('free');
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -143,6 +145,7 @@ function NewInvoiceInner() {
     fetch('/api/business').then(r => r.json()).then(d => {
       if (d?.name) setForm(f => ({ ...f, fromName: d.name, fromEmail: d.email, fromPhone: d.phone, fromAddress: d.address }));
     });
+    fetch('/api/user/plan').then(r => r.json()).then(d => { if (d.plan) setUserPlan(d.plan); });
   }, []);
 
   const selectClient = (clientId: string) => {
@@ -405,6 +408,31 @@ function NewInvoiceInner() {
               placeholder="Payment due within 30 days..." rows={3} />
           </div>
         </div>
+
+        {/* Chargeback Protection CTA */}
+        {userPlan === 'business' ? (
+          <div className="p-4 rounded-xl text-sm"
+            style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)', color: 'rgba(255,255,255,0.6)' }}>
+            <span style={{ color: '#A78BFA' }}>📍 GPS + Job Photos:</span> Save this invoice first, then open it to add job site evidence for chargeback protection.
+          </div>
+        ) : (
+          <div className="p-5 rounded-2xl"
+            style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.25)' }}>
+            <div className="flex items-start gap-3">
+              <span className="text-xl">🔒</span>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-semibold text-white">Chargeback Protection</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(251,191,36,0.2)', color: '#FCD34D', border: '1px solid rgba(251,191,36,0.4)' }}>Business Plan</span>
+                </div>
+                <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>Add GPS location + job photos to protect against payment disputes.</p>
+                <Link href="/dashboard/settings" className="text-xs px-3 py-1.5 rounded-xl" style={{ background: 'rgba(251,191,36,0.15)', border: '1px solid rgba(251,191,36,0.4)', color: '#FCD34D' }}>
+                  Upgrade to Business →
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Save buttons */}
         <div className="flex gap-3 justify-end pb-6">

@@ -9,7 +9,7 @@ interface Props {
 export default async function PublicPayPage({ params }: Props) {
   const invoice = await prisma.invoice.findUnique({
     where: { id: params.invoiceId },
-    include: { items: true, user: { include: { business: true } } },
+    include: { items: true, photos: true, user: { include: { business: true } } },
   });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const business = (invoice as any)?.user?.business;
@@ -200,6 +200,51 @@ export default async function PublicPayPage({ params }: Props) {
               )}
             </div>
           )}
+
+          {/* Job Site Evidence — Chargeback Protection */}
+          {(() => {
+            const photos = (invoice as any).photos ?? [];
+            const locationAddress = (invoice as any).locationAddress;
+            const locationLat = (invoice as any).locationLat;
+            const locationLng = (invoice as any).locationLng;
+            const hasEvidence = !!(locationAddress || photos.length > 0);
+            if (!hasEvidence) return null;
+            return (
+              <div className="p-8 border-b border-gray-100">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-sm font-semibold text-gray-700">🛡️ Work Verification</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-green-50 text-green-700 border border-green-200">
+                    ✓ Work Verified — Protected Payment
+                  </span>
+                </div>
+                {locationAddress && (
+                  <p className="text-sm text-gray-600 mb-3">
+                    📍 Work performed at:{' '}
+                    <a href={`https://maps.google.com/?q=${locationLat},${locationLng}`} target="_blank" rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline">
+                      {locationAddress}
+                    </a>
+                  </p>
+                )}
+                {photos.length > 0 && (
+                  <div>
+                    <p className="text-sm text-gray-600 mb-2">📸 {photos.length} photo{photos.length !== 1 ? 's' : ''} of completed work on file</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {photos.slice(0, 3).map((photo: { id: string; url: string }) => (
+                        <div key={photo.id} className="aspect-square rounded-xl overflow-hidden border border-gray-200">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={photo.url} alt="Job site" className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                    {photos.length > 3 && (
+                      <p className="text-xs text-gray-400 mt-1">+ {photos.length - 3} more photos on file</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Pay button */}
           <div className="p-8">
