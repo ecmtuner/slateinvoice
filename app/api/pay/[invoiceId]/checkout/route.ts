@@ -33,22 +33,18 @@ export async function POST(
 
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
-  // Determine if this user has a connected Express/Custom Stripe account
-  // Platform owner (STRIPE_PLATFORM_ACCOUNT) charges directly — no transfer needed
-  const platformAccount = process.env.STRIPE_PLATFORM_ACCOUNT || "";
+  // Get platform's own Stripe account ID to avoid self-transfer
+  const platformAccount = await stripe.accounts.retrieve().then(a => a.id).catch(() => "");
+
+  // Only use Connect transfer if user has an Express/Custom account that is NOT the platform itself
   const isConnectedAccount =
-    user.stripeAccountId &&
+    !!user.stripeAccountId &&
     user.stripeAccountStatus === "active" &&
     user.stripeAccountId !== platformAccount;
 
-  // 1% application fee for SlateInvoice (only for connected accounts)
-  const applicationFeeAmount = isConnectedAccount
-    ? Math.round(invoice.total * 100 * 0.01)
-    : undefined;
-
   const paymentIntentData: Stripe.Checkout.SessionCreateParams.PaymentIntentData = {};
   if (isConnectedAccount && user.stripeAccountId) {
-    paymentIntentData.application_fee_amount = applicationFeeAmount;
+    paymentIntentData.application_fee_amount = Math.round(invoice.total * 100 * 0.01);
     paymentIntentData.transfer_data = { destination: user.stripeAccountId };
   }
 
