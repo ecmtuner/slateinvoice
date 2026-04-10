@@ -26,19 +26,31 @@ export async function POST(
     return NextResponse.json({ error: "This invoice has already been paid" }, { status: 400 });
   }
 
-  // Require the invoice owner to have a connected Stripe account
   const user = invoice.user;
-  if (!user?.stripeAccountId) {
-    return NextResponse.json(
-      { error: "Payment not available — seller has not connected their Stripe account" },
-      { status: 402 }
-    );
+  if (!user) {
+    return NextResponse.json({ error: "Invoice owner not found" }, { status: 404 });
   }
 
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
-  // 1% application fee for SlateInvoice
-  const applicationFeeAmount = Math.round(invoice.total * 100 * 0.01);
+  // Determine if this user has a connected Express/Custom Stripe account
+  // Platform owner (STRIPE_PLATFORM_ACCOUNT) charges directly — no transfer needed
+  const platformAccount = process.env.STRIPE_PLATFORM_ACCOUNT || "";
+  const isConnectedAccount =
+    user.stripeAccountId &&
+    user.stripeAccountStatus === "active" &&
+    user.stripeAccountId !== platformAccount;
+
+  // 1% application fee for SlateInvoice (only for connected accounts)
+  const applicationFeeAmount = isConnectedAccount
+    ? Math.round(invoice.total * 100 * 0.01)
+    : undefined;
+
+  const paymentIntentData: Stripe.Checkout.SessionCreateParams.PaymentIntentData = {};
+  if (isConnectedAccount && user.stripeAccountId) {
+    paymentIntentData.application_fee_amount = applicationFeeAmount;
+    paymentIntentData.transfer_data = { destination: user.stripeAccountId };
+  }
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -59,12 +71,7 @@ export async function POST(
     cancel_url: `${baseUrl}/pay/${invoiceId}`,
     metadata: { invoiceId },
     ...(invoice.toEmail ? { customer_email: invoice.toEmail } : {}),
-    payment_intent_data: {
-      application_fee_amount: applicationFeeAmount,
-      transfer_data: {
-        destination: user.stripeAccountId,
-      },
-    },
+    ...(Object.keys(paymentIntentData).length > 0 ? { payment_intent_data: paymentIntentData } : {}),
   });
 
   return NextResponse.json({ url: session.url });
