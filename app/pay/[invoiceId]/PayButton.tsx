@@ -27,8 +27,8 @@ export default function PayButton({ invoiceId, total, currency }: Props) {
         setError(data.error || "Failed to create checkout session.");
         setLoading(false);
       }
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (e: any) {
+      setError(e?.message || "Something went wrong. Please try again.");
       setLoading(false);
     }
   };

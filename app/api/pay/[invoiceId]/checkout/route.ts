@@ -52,7 +52,9 @@ export async function POST(
     paymentIntentData.transfer_data = { destination: user.stripeAccountId };
   }
 
-  const session = await stripe.checkout.sessions.create({
+  let session;
+  try {
+    session = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items: [
       {
@@ -72,7 +74,11 @@ export async function POST(
     metadata: { invoiceId },
     ...(invoice.toEmail ? { customer_email: invoice.toEmail } : {}),
     ...(Object.keys(paymentIntentData).length > 0 ? { payment_intent_data: paymentIntentData } : {}),
-  });
+    });
+  } catch (err: any) {
+    console.error("[checkout] Stripe error:", err?.message, err?.code, err?.type);
+    return NextResponse.json({ error: err?.message || "Stripe error" }, { status: 500 });
+  }
 
   return NextResponse.json({ url: session.url });
 }
